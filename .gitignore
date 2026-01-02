@@ -1,0 +1,78 @@
+# Build results
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio cache/options
+.vs/
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# JetBrains Rider
+.idea/
+.idea_modules/
+*.sln.iml
+*.swp
+*.swo
+*~
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.DotSettings.user
+
+# Rider IDE
+.idea_modules/
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+.nuget/packages/
+.nuget/NuGetFallbackFolder
+
+# Generated files
+**/*.g.cs
+**/*.g.vb
+
+# GitHub Copilot
+.copilot/
+
+# Cursor
+.cursor/
+.cursorignore
+.cursorrules
+
+# OS-specific
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+nohup.out
+
+# Local settings
+appsettings.local.json
+launchSettings.json
+
