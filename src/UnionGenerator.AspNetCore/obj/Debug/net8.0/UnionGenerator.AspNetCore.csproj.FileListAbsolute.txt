@@ -1,0 +1,13 @@
+/Users/selcuk/UnionGenerator/src/UnionGenerator.AspNetCore/bin/Debug/net8.0/UnionGenerator.AspNetCore.deps.json
+/Users/selcuk/UnionGenerator/src/UnionGenerator.AspNetCore/bin/Debug/net8.0/UnionGenerator.AspNetCore.dll
+/Users/selcuk/UnionGenerator/src/UnionGenerator.AspNetCore/bin/Debug/net8.0/UnionGenerator.AspNetCore.pdb
+/Users/selcuk/UnionGenerator/src/UnionGenerator.AspNetCore/bin/Debug/net8.0/UnionGenerator.AspNetCore.xml
+/Users/selcuk/UnionGenerator/src/UnionGenerator.AspNetCore/obj/Debug/net8.0/UnionGenerator.AspNetCore.GeneratedMSBuildEditorConfig.editorconfig
+/Users/selcuk/UnionGenerator/src/UnionGenerator.AspNetCore/obj/Debug/net8.0/UnionGenerator.AspNetCore.AssemblyInfoInputs.cache
+/Users/selcuk/UnionGenerator/src/UnionGenerator.AspNetCore/obj/Debug/net8.0/UnionGenerator.AspNetCore.AssemblyInfo.cs
+/Users/selcuk/UnionGenerator/src/UnionGenerator.AspNetCore/obj/Debug/net8.0/UnionGenerator.AspNetCore.csproj.CoreCompileInputs.cache
+/Users/selcuk/UnionGenerator/src/UnionGenerator.AspNetCore/obj/Debug/net8.0/UnionGenerator.AspNetCore.dll
+/Users/selcuk/UnionGenerator/src/UnionGenerator.AspNetCore/obj/Debug/net8.0/refint/UnionGenerator.AspNetCore.dll
+/Users/selcuk/UnionGenerator/src/UnionGenerator.AspNetCore/obj/Debug/net8.0/UnionGenerator.AspNetCore.xml
+/Users/selcuk/UnionGenerator/src/UnionGenerator.AspNetCore/obj/Debug/net8.0/UnionGenerator.AspNetCore.pdb
+/Users/selcuk/UnionGenerator/src/UnionGenerator.AspNetCore/obj/Debug/net8.0/ref/UnionGenerator.AspNetCore.dll

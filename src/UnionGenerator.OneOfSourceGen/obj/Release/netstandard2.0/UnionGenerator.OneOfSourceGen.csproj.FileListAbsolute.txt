@@ -1,0 +1,10 @@
+/Users/selcuk/UnionGenerator/src/UnionGenerator.OneOfSourceGen/bin/Release/netstandard2.0/UnionGenerator.OneOfSourceGen.deps.json
+/Users/selcuk/UnionGenerator/src/UnionGenerator.OneOfSourceGen/bin/Release/netstandard2.0/UnionGenerator.OneOfSourceGen.dll
+/Users/selcuk/UnionGenerator/src/UnionGenerator.OneOfSourceGen/bin/Release/netstandard2.0/UnionGenerator.OneOfSourceGen.pdb
+/Users/selcuk/UnionGenerator/src/UnionGenerator.OneOfSourceGen/obj/Release/netstandard2.0/UnionGenerator.OneOfSourceGen.csproj.AssemblyReference.cache
+/Users/selcuk/UnionGenerator/src/UnionGenerator.OneOfSourceGen/obj/Release/netstandard2.0/UnionGenerator.OneOfSourceGen.GeneratedMSBuildEditorConfig.editorconfig
+/Users/selcuk/UnionGenerator/src/UnionGenerator.OneOfSourceGen/obj/Release/netstandard2.0/UnionGenerator.OneOfSourceGen.AssemblyInfoInputs.cache
+/Users/selcuk/UnionGenerator/src/UnionGenerator.OneOfSourceGen/obj/Release/netstandard2.0/UnionGenerator.OneOfSourceGen.AssemblyInfo.cs
+/Users/selcuk/UnionGenerator/src/UnionGenerator.OneOfSourceGen/obj/Release/netstandard2.0/UnionGenerator.OneOfSourceGen.csproj.CoreCompileInputs.cache
+/Users/selcuk/UnionGenerator/src/UnionGenerator.OneOfSourceGen/obj/Release/netstandard2.0/UnionGenerator.OneOfSourceGen.dll
+/Users/selcuk/UnionGenerator/src/UnionGenerator.OneOfSourceGen/obj/Release/netstandard2.0/UnionGenerator.OneOfSourceGen.pdb

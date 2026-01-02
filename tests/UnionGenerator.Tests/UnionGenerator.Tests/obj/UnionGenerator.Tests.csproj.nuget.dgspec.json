@@ -1,0 +1,511 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/selcuk/UnionGenerator/tests/UnionGenerator.Tests/UnionGenerator.Tests/UnionGenerator.Tests.csproj": {}
+  },
+  "projects": {
+    "/Users/selcuk/UnionGenerator/src/UnionGenerator.Analyzers/UnionGenerator.Analyzers.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/selcuk/UnionGenerator/src/UnionGenerator.Analyzers/UnionGenerator.Analyzers.csproj",
+        "projectName": "UnionGenerator.Analyzers",
+        "projectPath": "/Users/selcuk/UnionGenerator/src/UnionGenerator.Analyzers/UnionGenerator.Analyzers.csproj",
+        "packagesPath": "/Users/selcuk/.nuget/packages/",
+        "outputPath": "/Users/selcuk/UnionGenerator/src/UnionGenerator.Analyzers/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/selcuk/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netstandard2.0"
+        ],
+        "sources": {
+          "/usr/local/share/dotnet/library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netstandard2.0": {
+            "targetAlias": "netstandard2.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.100"
+      },
+      "frameworks": {
+        "netstandard2.0": {
+          "targetAlias": "netstandard2.0",
+          "dependencies": {
+            "Microsoft.CodeAnalysis.Analyzers": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[3.11.0, )"
+            },
+            "Microsoft.CodeAnalysis.CSharp": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[4.5.0, )"
+            },
+            "Microsoft.CodeAnalysis.CSharp.Workspaces": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[4.5.0, )"
+            },
+            "NETStandard.Library": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.3, )",
+              "autoReferenced": true
+            },
+            "System.Composition.AttributedModel": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[6.0.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.100/RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/selcuk/UnionGenerator/src/UnionGenerator.OneOfCompat/UnionGenerator.OneOfCompat.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/selcuk/UnionGenerator/src/UnionGenerator.OneOfCompat/UnionGenerator.OneOfCompat.csproj",
+        "projectName": "UnionGenerator.OneOfCompat",
+        "projectPath": "/Users/selcuk/UnionGenerator/src/UnionGenerator.OneOfCompat/UnionGenerator.OneOfCompat.csproj",
+        "packagesPath": "/Users/selcuk/.nuget/packages/",
+        "outputPath": "/Users/selcuk/UnionGenerator/src/UnionGenerator.OneOfCompat/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/selcuk/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "/usr/local/share/dotnet/library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/Users/selcuk/UnionGenerator/src/UnionGenerator/UnionGenerator/UnionGenerator.csproj": {
+                "projectPath": "/Users/selcuk/UnionGenerator/src/UnionGenerator/UnionGenerator/UnionGenerator.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.100"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.22, 8.0.22]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.22, 8.0.22]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.100/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/selcuk/UnionGenerator/src/UnionGenerator.OneOfExtensions/UnionGenerator.OneOfExtensions.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/selcuk/UnionGenerator/src/UnionGenerator.OneOfExtensions/UnionGenerator.OneOfExtensions.csproj",
+        "projectName": "UnionGenerator.OneOfExtensions",
+        "projectPath": "/Users/selcuk/UnionGenerator/src/UnionGenerator.OneOfExtensions/UnionGenerator.OneOfExtensions.csproj",
+        "packagesPath": "/Users/selcuk/.nuget/packages/",
+        "outputPath": "/Users/selcuk/UnionGenerator/src/UnionGenerator.OneOfExtensions/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/selcuk/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "/usr/local/share/dotnet/library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/Users/selcuk/UnionGenerator/src/UnionGenerator/UnionGenerator/UnionGenerator.csproj": {
+                "projectPath": "/Users/selcuk/UnionGenerator/src/UnionGenerator/UnionGenerator/UnionGenerator.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.100"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
+            },
+            "OneOf": {
+              "target": "Package",
+              "version": "[3.0.271, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.22, 8.0.22]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.22, 8.0.22]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.100/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/selcuk/UnionGenerator/src/UnionGenerator.OneOfSourceGen/UnionGenerator.OneOfSourceGen.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/selcuk/UnionGenerator/src/UnionGenerator.OneOfSourceGen/UnionGenerator.OneOfSourceGen.csproj",
+        "projectName": "UnionGenerator.OneOfSourceGen",
+        "projectPath": "/Users/selcuk/UnionGenerator/src/UnionGenerator.OneOfSourceGen/UnionGenerator.OneOfSourceGen.csproj",
+        "packagesPath": "/Users/selcuk/.nuget/packages/",
+        "outputPath": "/Users/selcuk/UnionGenerator/src/UnionGenerator.OneOfSourceGen/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/selcuk/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netstandard2.0"
+        ],
+        "sources": {
+          "/usr/local/share/dotnet/library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netstandard2.0": {
+            "targetAlias": "netstandard2.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.100"
+      },
+      "frameworks": {
+        "netstandard2.0": {
+          "targetAlias": "netstandard2.0",
+          "dependencies": {
+            "Microsoft.CodeAnalysis.Analyzers": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[3.11.0, )"
+            },
+            "Microsoft.CodeAnalysis.CSharp": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[4.5.0, )"
+            },
+            "NETStandard.Library": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.3, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.100/RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/selcuk/UnionGenerator/src/UnionGenerator/UnionGenerator/UnionGenerator.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/selcuk/UnionGenerator/src/UnionGenerator/UnionGenerator/UnionGenerator.csproj",
+        "projectName": "UnionGenerator",
+        "projectPath": "/Users/selcuk/UnionGenerator/src/UnionGenerator/UnionGenerator/UnionGenerator.csproj",
+        "packagesPath": "/Users/selcuk/.nuget/packages/",
+        "outputPath": "/Users/selcuk/UnionGenerator/src/UnionGenerator/UnionGenerator/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/selcuk/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netstandard2.0"
+        ],
+        "sources": {
+          "/usr/local/share/dotnet/library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netstandard2.0": {
+            "targetAlias": "netstandard2.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.100"
+      },
+      "frameworks": {
+        "netstandard2.0": {
+          "targetAlias": "netstandard2.0",
+          "dependencies": {
+            "Microsoft.CodeAnalysis.Analyzers": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[3.3.4, )"
+            },
+            "Microsoft.CodeAnalysis.CSharp": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[4.5.0, )"
+            },
+            "NETStandard.Library": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.3, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.100/RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/selcuk/UnionGenerator/tests/UnionGenerator.Tests/UnionGenerator.Tests/UnionGenerator.Tests.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/selcuk/UnionGenerator/tests/UnionGenerator.Tests/UnionGenerator.Tests/UnionGenerator.Tests.csproj",
+        "projectName": "UnionGenerator.Tests",
+        "projectPath": "/Users/selcuk/UnionGenerator/tests/UnionGenerator.Tests/UnionGenerator.Tests/UnionGenerator.Tests.csproj",
+        "packagesPath": "/Users/selcuk/.nuget/packages/",
+        "outputPath": "/Users/selcuk/UnionGenerator/tests/UnionGenerator.Tests/UnionGenerator.Tests/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/selcuk/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "/usr/local/share/dotnet/library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/Users/selcuk/UnionGenerator/src/UnionGenerator.Analyzers/UnionGenerator.Analyzers.csproj": {
+                "projectPath": "/Users/selcuk/UnionGenerator/src/UnionGenerator.Analyzers/UnionGenerator.Analyzers.csproj"
+              },
+              "/Users/selcuk/UnionGenerator/src/UnionGenerator.OneOfCompat/UnionGenerator.OneOfCompat.csproj": {
+                "projectPath": "/Users/selcuk/UnionGenerator/src/UnionGenerator.OneOfCompat/UnionGenerator.OneOfCompat.csproj"
+              },
+              "/Users/selcuk/UnionGenerator/src/UnionGenerator.OneOfExtensions/UnionGenerator.OneOfExtensions.csproj": {
+                "projectPath": "/Users/selcuk/UnionGenerator/src/UnionGenerator.OneOfExtensions/UnionGenerator.OneOfExtensions.csproj"
+              },
+              "/Users/selcuk/UnionGenerator/src/UnionGenerator.OneOfSourceGen/UnionGenerator.OneOfSourceGen.csproj": {
+                "projectPath": "/Users/selcuk/UnionGenerator/src/UnionGenerator.OneOfSourceGen/UnionGenerator.OneOfSourceGen.csproj"
+              },
+              "/Users/selcuk/UnionGenerator/src/UnionGenerator/UnionGenerator/UnionGenerator.csproj": {
+                "projectPath": "/Users/selcuk/UnionGenerator/src/UnionGenerator/UnionGenerator/UnionGenerator.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.100"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.CodeAnalysis.CSharp": {
+              "target": "Package",
+              "version": "[4.5.0, )"
+            },
+            "Microsoft.CodeAnalysis.CSharp.Workspaces": {
+              "target": "Package",
+              "version": "[4.5.0, )"
+            },
+            "Microsoft.CodeAnalysis.Workspaces.Common": {
+              "target": "Package",
+              "version": "[4.5.0, )"
+            },
+            "Microsoft.NET.Test.Sdk": {
+              "target": "Package",
+              "version": "[17.8.0, )"
+            },
+            "coverlet.collector": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "xunit": {
+              "target": "Package",
+              "version": "[2.5.3, )"
+            },
+            "xunit.runner.visualstudio": {
+              "target": "Package",
+              "version": "[2.5.3, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.22, 8.0.22]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.22, 8.0.22]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.100/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

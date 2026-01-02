@@ -1,0 +1,4 @@
+/Users/selcuk/UnionGenerator/src/ExampleProject/ExampleProject/obj/Debug/net8.0/ExampleProject.GeneratedMSBuildEditorConfig.editorconfig
+/Users/selcuk/UnionGenerator/src/ExampleProject/ExampleProject/obj/Debug/net8.0/ExampleProject.AssemblyInfoInputs.cache
+/Users/selcuk/UnionGenerator/src/ExampleProject/ExampleProject/obj/Debug/net8.0/ExampleProject.AssemblyInfo.cs
+/Users/selcuk/UnionGenerator/src/ExampleProject/ExampleProject/obj/Debug/net8.0/ExampleProject.csproj.CoreCompileInputs.cache

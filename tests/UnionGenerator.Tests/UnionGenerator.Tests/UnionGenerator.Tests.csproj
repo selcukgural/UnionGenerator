@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="4.5.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="xunit" Version="2.5.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.5.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.5.0" />
+    <!-- Removed external testing packages; tests use Roslyn APIs directly to avoid external package restore issues -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\UnionGenerator\UnionGenerator\UnionGenerator.csproj" />
+    <ProjectReference Include="..\..\..\src\UnionGenerator.OneOfCompat\UnionGenerator.OneOfCompat.csproj" />
+    <ProjectReference Include="..\..\..\src\UnionGenerator.OneOfExtensions\UnionGenerator.OneOfExtensions.csproj" />
+    <ProjectReference Include="..\..\..\src\UnionGenerator.OneOfSourceGen\UnionGenerator.OneOfSourceGen.csproj" />
+    <ProjectReference Include="..\..\..\src\UnionGenerator.Analyzers\UnionGenerator.Analyzers.csproj" />
+  </ItemGroup>
+
+</Project>

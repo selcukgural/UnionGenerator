@@ -1,0 +1,5 @@
+/Users/selcuk/UnionGenerator/tests/UnionGenerator.AspNetCore.NewFeatures.Tests/obj/Debug/net8.0/UnionGenerator.AspNetCore.NewFeatures.Tests.csproj.AssemblyReference.cache
+/Users/selcuk/UnionGenerator/tests/UnionGenerator.AspNetCore.NewFeatures.Tests/obj/Debug/net8.0/UnionGenerator.AspNetCore.NewFeatures.Tests.GeneratedMSBuildEditorConfig.editorconfig
+/Users/selcuk/UnionGenerator/tests/UnionGenerator.AspNetCore.NewFeatures.Tests/obj/Debug/net8.0/UnionGenerator.AspNetCore.NewFeatures.Tests.AssemblyInfoInputs.cache
+/Users/selcuk/UnionGenerator/tests/UnionGenerator.AspNetCore.NewFeatures.Tests/obj/Debug/net8.0/UnionGenerator.AspNetCore.NewFeatures.Tests.AssemblyInfo.cs
+/Users/selcuk/UnionGenerator/tests/UnionGenerator.AspNetCore.NewFeatures.Tests/obj/Debug/net8.0/UnionGenerator.AspNetCore.NewFeatures.Tests.csproj.CoreCompileInputs.cache
