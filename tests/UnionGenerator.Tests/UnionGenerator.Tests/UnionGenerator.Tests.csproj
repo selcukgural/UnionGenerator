@@ -30,6 +30,7 @@
     <ProjectReference Include="..\..\..\src\UnionGenerator.OneOfExtensions\UnionGenerator.OneOfExtensions.csproj" />
     <ProjectReference Include="..\..\..\src\UnionGenerator.OneOfSourceGen\UnionGenerator.OneOfSourceGen.csproj" />
     <ProjectReference Include="..\..\..\src\UnionGenerator.Analyzers\UnionGenerator.Analyzers.csproj" />
+    <ProjectReference Include="..\..\..\src\UnionGenerator.Analyzers.CodeFixes\UnionGenerator.Analyzers.CodeFixes.csproj" />
   </ItemGroup>
 
 </Project>

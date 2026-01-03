@@ -31,7 +31,7 @@ namespace TestNamespace
         // create a OneOf<string,string> using the internal constructor: (object value, int index)
         var oneType = typeof(OneOf.OneOf<string, string>);
         // Create instance via op_Implicit(string) to avoid constructor/version differences
-        var implicitMethods = oneType.GetMethods(BindingFlags.Public | BindingFlags.Static).Where(m => m.IsSpecialName && m.Name == "op_Implicit").ToList();
+        var implicitMethods = oneType.GetMethods(BindingFlags.Public | BindingFlags.Static).Where(m => m is { IsSpecialName: true, Name: "op_Implicit" }).ToList();
         MethodInfo? implicitMethod = null;
         foreach (var m in implicitMethods)
         {

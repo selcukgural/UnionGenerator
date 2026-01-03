@@ -618,7 +618,7 @@ namespace TestNamespace
 
         // Find Match method with correct signature
         var matchMethods = resultType.GetMethods(BindingFlags.Public | BindingFlags.Instance)
-                                     .Where(m => m.Name == "Match" && m.IsGenericMethod)
+                                     .Where(m => m is { Name: "Match", IsGenericMethod: true })
                                      .ToList();
 
         Assert.NotEmpty(matchMethods);

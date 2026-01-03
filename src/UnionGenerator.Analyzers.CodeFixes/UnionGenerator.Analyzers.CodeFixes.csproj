@@ -3,19 +3,25 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>11.0</LangVersion>
     <Nullable>enable</Nullable>
-    <AssemblyName>UnionGenerator.Analyzers</AssemblyName>
+    <AssemblyName>UnionGenerator.Analyzers.CodeFixes</AssemblyName>
     <PackageType>Analyzer</PackageType>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
   </PropertyGroup>
+
   <ItemGroup>
-    <Compile Remove="UnionDebugVisualizerCodeFix.cs" />
-    <Compile Remove="CasePatternCodeFixProvider.cs" />
+    <Compile Include="../UnionGenerator.Analyzers/UnionDebugVisualizerCodeFix.cs" Link="UnionDebugVisualizerCodeFix.cs" />
+    <Compile Include="../UnionGenerator.Analyzers/CasePatternCodeFixProvider.cs" Link="CasePatternCodeFixProvider.cs" />
   </ItemGroup>
+
   <ItemGroup>
+    <ProjectReference Include="../UnionGenerator.Analyzers/UnionGenerator.Analyzers.csproj" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.5.0" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.5.0" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="4.5.0" PrivateAssets="all" />
     <PackageReference Include="System.Composition.AttributedModel" Version="6.0.0" PrivateAssets="all" />
   </ItemGroup>
+
   <ItemGroup>
     <AdditionalFiles Include="AnalyzerReleases.Shipped.md" />
     <AdditionalFiles Include="AnalyzerReleases.Unshipped.md" />

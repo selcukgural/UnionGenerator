@@ -30,7 +30,7 @@ public class CasePatternAnalyzer : DiagnosticAnalyzer
         context.RegisterSyntaxNodeAction(AnalyzeIfStatement, SyntaxKind.IfStatement);
     }
 
-    private void AnalyzeIfStatement(SyntaxNodeAnalysisContext context)
+    private static void AnalyzeIfStatement(SyntaxNodeAnalysisContext context)
     {
         var ifStmt = (IfStatementSyntax)context.Node;
         // Simple heuristic: look for 'if (x.IsT0) { ... } else if (x.IsT1) { ... }' chains

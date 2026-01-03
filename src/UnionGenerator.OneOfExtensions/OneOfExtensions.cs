@@ -15,29 +15,21 @@ public static class OneOfExtensions
     /// <typeparam name="T1">Second alternative type.</typeparam>
     /// <param name="oneOf">The OneOf instance.</param>
     /// <returns>An instance of the generated union type.</returns>
-    public static TGenerated ToGeneratedResult<TGenerated, T0, T1>(this OneOf.OneOf<T0, T1> oneOf)
-        where TGenerated : class
+    public static TGenerated ToGeneratedResult<TGenerated, T0, T1>(this OneOf.OneOf<T0, T1> oneOf) where TGenerated : class
     {
         if (oneOf.IsT0)
         {
-            var val = oneOf.AsT0;
-            return CreateFromFactory<TGenerated>("Ok", val);
+            return CreateFromFactory<TGenerated>("Ok", oneOf.AsT0);
         }
 
-        if (oneOf.IsT1)
-        {
-            var val = oneOf.AsT1;
-            return CreateFromFactory<TGenerated>("Error", val);
-        }
-
-        throw new InvalidOperationException("Unsupported OneOf variant.");
+        return !oneOf.IsT1 ? throw new InvalidOperationException("Unsupported OneOf variant.") : CreateFromFactory<TGenerated>("Error", oneOf.AsT1);
     }
 
-    private static TGenerated CreateFromFactory<TGenerated>(string factoryName, object? value)
-        where TGenerated : class
+    private static TGenerated CreateFromFactory<TGenerated>(string factoryName, object? value) where TGenerated : class
     {
         var target = typeof(TGenerated);
         var method = target.GetMethod(factoryName, BindingFlags.Public | BindingFlags.Static);
+
         if (method == null)
         {
             throw new InvalidOperationException($"Factory '{factoryName}' not found on {target}.");

@@ -78,17 +78,17 @@ minimalApiGroup.MapDelete("/users/{id}", DeleteUserMinimal)
 app.Run();
 
 // Minimal API endpoint handlers
-Result<IReadOnlyList<User>, ProblemDetailsError> GetAllUsersMinimal(IUserService userService)
+static Result<IReadOnlyList<User>, ProblemDetailsError> GetAllUsersMinimal(IUserService userService)
 {
     return userService.GetAllUsers();
 }
 
-Result<User, ProblemDetailsError> GetUserMinimal(int id, IUserService userService)
+static Result<User, ProblemDetailsError> GetUserMinimal(int id, IUserService userService)
 {
     return userService.GetUser(id);
 }
 
-Result<User, ProblemDetailsError> CreateUserMinimal(
+static Result<User, ProblemDetailsError> CreateUserMinimal(
     [FromBody] CreateUserDto dto,
     IUserService userService,
     HttpContext httpContext)
@@ -96,7 +96,7 @@ Result<User, ProblemDetailsError> CreateUserMinimal(
     return userService.CreateUser(dto, httpContext.Request.Path);
 }
 
-Result<User, ProblemDetailsError> UpdateUserMinimal(
+static Result<User, ProblemDetailsError> UpdateUserMinimal(
     int id,
     [FromBody] UpdateUserDto dto,
     IUserService userService,
@@ -105,7 +105,7 @@ Result<User, ProblemDetailsError> UpdateUserMinimal(
     return userService.UpdateUser(id, dto, httpContext.Request.Path);
 }
 
-Result<bool, ProblemDetailsError> DeleteUserMinimal(
+static Result<bool, ProblemDetailsError> DeleteUserMinimal(
     int id,
     IUserService userService,
     HttpContext httpContext)

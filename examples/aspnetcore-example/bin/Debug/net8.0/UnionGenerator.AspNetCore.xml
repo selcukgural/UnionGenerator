@@ -197,7 +197,7 @@
             </summary>
             <remarks>
             <para>
-            This convention examines the simple name of the error type (without namespace)
+            This convention examines the simple name of the error type (without a namespace)
             and matches it against common HTTP error patterns.
             </para>
             <para>
@@ -302,8 +302,17 @@
             <summary>
             Creates a compiled property accessor for the given type.
             </summary>
-            <param name="errorType">The error type to analyze.</param>
-            <returns>A function that reads the status code property, or null if no suitable property exists.</returns>
+            <param name="errorType">The error type to analyze. Must not be null.</param>
+            <returns>
+            A function that reads the status code property, or null if no suitable property exists.
+            The returned delegate takes an object instance of <paramref name="errorType"/> and returns the integer status code.
+            </returns>
+            <remarks>
+            This implementation lists public instance properties once and builds a compiled
+            expression delegate for fast later access. This avoids repeated calls to
+            <see cref="M:System.Type.GetProperty(System.String,System.Reflection.BindingFlags)"/> on the hot path.
+            The caller (concurrent cache) is expected to handle thread-safety for reuse.
+            </remarks>
         </member>
         <member name="T:UnionGenerator.AspNetCore.Conventions.StatusCodeConventionRegistry">
             <summary>
@@ -571,7 +580,7 @@
             </para>
             <para>
             The extensions work with any union type that follows the two-case pattern with boolean properties
-            (e.g., IsOk/IsError, IsSuccess/IsFailure) and exposes Value properties for extracting case data.
+            (e.g., IsOk/IsError, IsSuccess/IsFailure) and expose Value properties for extracting case data.
             </para>
             <para>
             Performance: These methods use reflection to detect union cases and extract values. For high-throughput
@@ -600,7 +609,7 @@
             <remarks>
             <para>
             This method expects the union to have:
-            - Two boolean properties indicating active case (e.g., IsOk/IsError, IsSuccess/IsFailure)
+            - Two boolean properties indicating an active case (e.g., IsOk/IsError, IsSuccess/IsFailure)
             - A Value property returning the success value
             - An error property returning <see cref="T:UnionGenerator.AspNetCore.ProblemDetailsError"/>
             </para>

@@ -13,7 +13,7 @@ namespace UnionGenerator.AspNetCore.Extensions;
 /// </para>
 /// <para>
 /// The extensions work with any union type that follows the two-case pattern with boolean properties
-/// (e.g., IsOk/IsError, IsSuccess/IsFailure) and exposes Value properties for extracting case data.
+/// (e.g., IsOk/IsError, IsSuccess/IsFailure) and expose Value properties for extracting case data.
 /// </para>
 /// <para>
 /// Performance: These methods use reflection to detect union cases and extract values. For high-throughput
@@ -42,7 +42,7 @@ public static class UnionActionResultExtensions
     /// <remarks>
     /// <para>
     /// This method expects the union to have:
-    /// - Two boolean properties indicating active case (e.g., IsOk/IsError, IsSuccess/IsFailure)
+    /// - Two boolean properties indicating an active case (e.g., IsOk/IsError, IsSuccess/IsFailure)
     /// - A Value property returning the success value
     /// - An error property returning <see cref="ProblemDetailsError"/>
     /// </para>

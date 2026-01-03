@@ -5,7 +5,7 @@ namespace UnionGenerator.AspNetCore.Conventions;
 /// </summary>
 /// <remarks>
 /// <para>
-/// This convention examines the simple name of the error type (without namespace)
+/// This convention examines the simple name of the error type (without a namespace)
 /// and matches it against common HTTP error patterns.
 /// </para>
 /// <para>
@@ -75,14 +75,8 @@ public sealed class NameBasedConvention : IStatusCodeConvention
         }
 
         // Check for partial matches (e.g., "UserNotFoundError" contains "NotFound")
-        var lowerTypeName = typeName.ToLowerInvariant();
-        foreach (var kvp in StatusCodeMap)
+        foreach (var kvp in StatusCodeMap.Where(kvp => typeName.Contains(kvp.Key, StringComparison.OrdinalIgnoreCase)))
         {
-            if (!lowerTypeName.Contains(kvp.Key))
-            {
-                continue;
-            }
-
             statusCode = kvp.Value;
             return true;
         }

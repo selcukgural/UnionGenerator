@@ -11,7 +11,7 @@ using Microsoft.CodeAnalysis.Text;
 namespace UnionGenerator;
 
 /// <summary>
-/// Source generator that creates discriminated union-like structures for classes marked with [GenerateUnion] attribute.
+/// Source generator that creates discriminated union-like structures for classes marked with the [GenerateUnion] attribute.
 /// </summary>
 [Generator]
 public sealed class UnionGenerator : ISourceGenerator
@@ -72,7 +72,7 @@ namespace UnionGenerator.Attributes
 
                 if (cases.Count == 0)
                 {
-                    // No valid cases found, skip generation but diagnostics were already reported
+                    // No valid cases found, skip generation, but diagnostics were already reported
                     continue;
                 }
 
@@ -121,7 +121,7 @@ namespace UnionGenerator.Attributes
 
         foreach (var method in staticMethods)
         {
-            // For iteration 1, only support methods with 0 or 1 parameter; ignore others for code generation
+            // For iteration 1, only support methods with 0 or 1 parameters; ignore others for code generation
             if (method.Parameters.Length > 1)
             {
                 var descriptor = new DiagnosticDescriptor("UG9003", "Factory method has multiple parameters",
@@ -184,7 +184,7 @@ namespace UnionGenerator.Attributes
 
         if (cases.Count == 0 && staticMethods.Count > 0)
         {
-            // If we have static methods but none were valid cases (e.g. all had >1 params), 
+            // If we have static methods but none were valid cases (e.g., all had >1 params), 
             // we should still return something so it doesn't trigger UG9002 incorrectly if there are other errors
         }
 
@@ -288,7 +288,7 @@ namespace UnionGenerator.Attributes
 
         sb.AppendLine("    {");
 
-        // Generate nested case classes first (before proxy class so it can reference them)
+        // Generate nested case classes first (before the proxy class so it can reference them)
         foreach (var unionCase in cases)
         {
             GenerateCaseClass(sb, unionType, unionCase, typeParameters, cases);
@@ -355,8 +355,9 @@ namespace UnionGenerator.Attributes
     /// <summary>
     /// Generates a nested sealed class for a union case.
     /// </summary>
-    private void GenerateCaseClass(StringBuilder sb, INamedTypeSymbol unionType, InternalUnionCase unionCase,
-                                   System.Collections.Immutable.ImmutableArray<ITypeParameterSymbol> typeParameters, List<InternalUnionCase> cases)
+    private static void GenerateCaseClass(StringBuilder sb, INamedTypeSymbol unionType, InternalUnionCase unionCase,
+                                          System.Collections.Immutable.ImmutableArray<ITypeParameterSymbol> typeParameters,
+                                          List<InternalUnionCase> cases)
     {
         var caseClassName = $"{unionCase.Name}Case";
 
@@ -375,7 +376,7 @@ namespace UnionGenerator.Attributes
                           ? $"        [DebuggerDisplay(\"{unionCase.Name}({{Value}})\")] "
                           : $"        [DebuggerDisplay(\"{unionCase.Name}\")] ");
 
-        // Nested classes inherit generic parameters from outer class, so we don't redeclare them
+        // Nested classes inherit generic parameters from the outer class, so we don't redeclare them,
         // But we need to specify them in the base class reference
         if (typeParameters.Length > 0)
         {
@@ -424,7 +425,7 @@ namespace UnionGenerator.Attributes
     /// <summary>
     /// Generates pattern matching properties (IsOk, IsError, etc.).
     /// </summary>
-    private void GeneratePatternMatchingProperties(StringBuilder sb, List<InternalUnionCase> cases)
+    private static void GeneratePatternMatchingProperties(StringBuilder sb, List<InternalUnionCase> cases)
     {
         foreach (var unionCase in cases)
         {
@@ -444,7 +445,7 @@ namespace UnionGenerator.Attributes
     /// Generates Value and Error properties for direct access to case values.
     /// For 2-case unions, generates Value (first case) and Error (second case) properties.
     /// </summary>
-    private void GenerateValueProperties(StringBuilder sb, List<InternalUnionCase> cases)
+    private static void GenerateValueProperties(StringBuilder sb, List<InternalUnionCase> cases)
     {
         if (cases.Count != 2)
         {
@@ -455,14 +456,17 @@ namespace UnionGenerator.Attributes
         var firstCase = cases[0];
         var secondCase = cases[1];
 
+        string? nullableTypeName;
+        string? caseClassName;
+
         // Value property for the first case (always named "Value")
         if (firstCase.ValueType != null)
         {
             var valueTypeName = GetTypeName(firstCase.ValueType);
-            var caseClassName = $"{firstCase.Name}Case";
+            caseClassName = $"{firstCase.Name}Case";
 
             // Make nullable if it's a value type
-            var nullableTypeName = firstCase.ValueType.IsValueType ? $"{valueTypeName}?" : valueTypeName;
+            nullableTypeName = firstCase.ValueType.IsValueType ? $"{valueTypeName}?" : valueTypeName;
 
             sb.AppendLine("        /// <summary>");
 
@@ -485,37 +489,38 @@ namespace UnionGenerator.Attributes
             sb.AppendLine();
         }
 
-        // Error property for the second case (use case name + "Value" to avoid conflicts)
-        if (secondCase.ValueType != null)
+        if (secondCase.ValueType == null)
         {
-            var errorTypeName = GetTypeName(secondCase.ValueType);
-            var caseClassName = $"{secondCase.Name}Case";
-
-            // Make nullable if it's a value type
-            var nullableTypeName = secondCase.ValueType.IsValueType ? $"{errorTypeName}?" : errorTypeName;
-
-            // Use case name + "Value" to avoid conflicts with static methods
-            var propertyName = $"{secondCase.Name}Value";
-            sb.AppendLine("        /// <summary>");
-
-            sb.AppendLine($"        /// Gets the value when this union is the {secondCase.Name} case, or <c>null</c>/<c>default</c> otherwise.");
-            sb.AppendLine("        /// </summary>");
-
-            sb.AppendLine(
-                $"        /// <returns>The value if this is the {secondCase.Name} case; otherwise, <c>null</c> or <c>default</c>.</returns>");
-            sb.AppendLine($"        public {nullableTypeName} {propertyName}");
-            sb.AppendLine("        {");
-            sb.AppendLine("            get");
-            sb.AppendLine("            {");
-
-            sb.AppendLine(secondCase.ValueType.IsValueType
-                              ? $"                return this is {caseClassName} c ? c.Value : null;"
-                              : $"                return this is {caseClassName} c ? c.Value : default!;");
-
-            sb.AppendLine("            }");
-            sb.AppendLine("        }");
-            sb.AppendLine();
+            return;
         }
+
+        // Error property for the second case (use case name + "Value" to avoid conflicts)
+        var errorTypeName = GetTypeName(secondCase.ValueType);
+        caseClassName = $"{secondCase.Name}Case";
+
+        // Make nullable if it's a value type
+        nullableTypeName = secondCase.ValueType.IsValueType ? $"{errorTypeName}?" : errorTypeName;
+
+        // Use case name + "Value" to avoid conflicts with static methods
+        var propertyName = $"{secondCase.Name}Value";
+        sb.AppendLine("        /// <summary>");
+
+        sb.AppendLine($"        /// Gets the value when this union is the {secondCase.Name} case, or <c>null</c>/<c>default</c> otherwise.");
+        sb.AppendLine("        /// </summary>");
+
+        sb.AppendLine($"        /// <returns>The value if this is the {secondCase.Name} case; otherwise, <c>null</c> or <c>default</c>.</returns>");
+        sb.AppendLine($"        public {nullableTypeName} {propertyName}");
+        sb.AppendLine("        {");
+        sb.AppendLine("            get");
+        sb.AppendLine("            {");
+
+        sb.AppendLine(secondCase.ValueType.IsValueType
+                          ? $"                return this is {caseClassName} c ? c.Value : null;"
+                          : $"                return this is {caseClassName} c ? c.Value : default!;");
+
+        sb.AppendLine("            }");
+        sb.AppendLine("        }");
+        sb.AppendLine();
     }
 
     /// <summary>
@@ -767,7 +772,7 @@ namespace UnionGenerator.Attributes
         sb.AppendLine("        }");
         sb.AppendLine();
 
-        // Generate void-returning async Match overload that accepts Func<Task>/Func<T,Task>
+        // Generate a void-returning async Match overload that accepts Func<Task>/Func<T, Task>
         sb.AppendLine("        /// <summary>");
         sb.AppendLine("        /// Performs asynchronous pattern matching on the union and executes the appropriate action for the active case.");
         sb.AppendLine("        /// </summary>");
@@ -902,7 +907,7 @@ namespace UnionGenerator.Attributes
     /// <summary>
     /// Generates GetHashCode method for the union type.
     /// </summary>
-    private void GenerateGetHashCode(StringBuilder sb, List<InternalUnionCase> cases)
+    private static void GenerateGetHashCode(StringBuilder sb, List<InternalUnionCase> cases)
     {
         sb.AppendLine("        public override int GetHashCode()");
         sb.AppendLine("        {");
@@ -961,60 +966,64 @@ namespace UnionGenerator.Attributes
     {
         _ = typeParameters;
 
-        // For 2-case unions, generate Deconstruct method
-        if (cases.Count == 2)
+        if (cases.Count != 2)
         {
-            var firstCase = cases[0];
-            var secondCase = cases[1];
-
-            if (firstCase.ValueType != null && secondCase.ValueType != null)
-            {
-                var firstTypeName = GetTypeName(firstCase.ValueType);
-                var secondTypeName = GetTypeName(secondCase.ValueType);
-                var firstCaseClassName = $"{firstCase.Name}Case";
-                var secondCaseClassName = $"{secondCase.Name}Case";
-
-                // Make nullable for out parameters
-                var firstNullableType = firstCase.ValueType.IsValueType ? $"{firstTypeName}?" : firstTypeName;
-                var secondNullableType = secondCase.ValueType.IsValueType ? $"{secondTypeName}?" : secondTypeName;
-
-                sb.AppendLine(
-                    $"        public void Deconstruct(out {firstNullableType} {firstCase.Name.ToLower()}, out {secondNullableType} {secondCase.Name.ToLower()})");
-                sb.AppendLine("        {");
-                sb.AppendLine($"            if (this is {firstCaseClassName} {firstCase.Name.ToLower()}Case)");
-                sb.AppendLine("            {");
-                sb.AppendLine($"                {firstCase.Name.ToLower()} = {firstCase.Name.ToLower()}Case.Value;");
-
-                sb.AppendLine(secondCase.ValueType.IsValueType
-                                  ? $"                {secondCase.Name.ToLower()} = null;"
-                                  : $"                {secondCase.Name.ToLower()} = default!;");
-
-                sb.AppendLine("            }");
-                sb.AppendLine($"            else if (this is {secondCaseClassName} {secondCase.Name.ToLower()}Case)");
-                sb.AppendLine("            {");
-
-                sb.AppendLine(firstCase.ValueType.IsValueType
-                                  ? $"                {firstCase.Name.ToLower()} = null;"
-                                  : $"                {firstCase.Name.ToLower()} = default!;");
-
-                sb.AppendLine($"                {secondCase.Name.ToLower()} = {secondCase.Name.ToLower()}Case.Value;");
-                sb.AppendLine("            }");
-                sb.AppendLine("            else");
-                sb.AppendLine("            {");
-
-                sb.AppendLine(firstCase.ValueType.IsValueType
-                                  ? $"                {firstCase.Name.ToLower()} = null;"
-                                  : $"                {firstCase.Name.ToLower()} = default!;");
-
-                sb.AppendLine(secondCase.ValueType.IsValueType
-                                  ? $"                {secondCase.Name.ToLower()} = null;"
-                                  : $"                {secondCase.Name.ToLower()} = default!;");
-
-                sb.AppendLine("            }");
-                sb.AppendLine("        }");
-                sb.AppendLine();
-            }
+            return;
         }
+
+        var firstCase = cases[0];
+        var secondCase = cases[1];
+
+        if (firstCase.ValueType == null || secondCase.ValueType == null)
+        {
+            return;
+        }
+
+        // For 2-case unions, generate Deconstruct method
+        var firstTypeName = GetTypeName(firstCase.ValueType);
+        var secondTypeName = GetTypeName(secondCase.ValueType);
+        var firstCaseClassName = $"{firstCase.Name}Case";
+        var secondCaseClassName = $"{secondCase.Name}Case";
+
+        // Make nullable for out parameters
+        var firstNullableType = firstCase.ValueType.IsValueType ? $"{firstTypeName}?" : firstTypeName;
+        var secondNullableType = secondCase.ValueType.IsValueType ? $"{secondTypeName}?" : secondTypeName;
+
+        sb.AppendLine(
+            $"        public void Deconstruct(out {firstNullableType} {firstCase.Name.ToLower()}, out {secondNullableType} {secondCase.Name.ToLower()})");
+        sb.AppendLine("        {");
+        sb.AppendLine($"            if (this is {firstCaseClassName} {firstCase.Name.ToLower()}Case)");
+        sb.AppendLine("            {");
+        sb.AppendLine($"                {firstCase.Name.ToLower()} = {firstCase.Name.ToLower()}Case.Value;");
+
+        sb.AppendLine(secondCase.ValueType.IsValueType
+                          ? $"                {secondCase.Name.ToLower()} = null;"
+                          : $"                {secondCase.Name.ToLower()} = default!;");
+
+        sb.AppendLine("            }");
+        sb.AppendLine($"            else if (this is {secondCaseClassName} {secondCase.Name.ToLower()}Case)");
+        sb.AppendLine("            {");
+
+        sb.AppendLine(firstCase.ValueType.IsValueType
+                          ? $"                {firstCase.Name.ToLower()} = null;"
+                          : $"                {firstCase.Name.ToLower()} = default!;");
+
+        sb.AppendLine($"                {secondCase.Name.ToLower()} = {secondCase.Name.ToLower()}Case.Value;");
+        sb.AppendLine("            }");
+        sb.AppendLine("            else");
+        sb.AppendLine("            {");
+
+        sb.AppendLine(firstCase.ValueType.IsValueType
+                          ? $"                {firstCase.Name.ToLower()} = null;"
+                          : $"                {firstCase.Name.ToLower()} = default!;");
+
+        sb.AppendLine(secondCase.ValueType.IsValueType
+                          ? $"                {secondCase.Name.ToLower()} = null;"
+                          : $"                {secondCase.Name.ToLower()} = default!;");
+
+        sb.AppendLine("            }");
+        sb.AppendLine("        }");
+        sb.AppendLine();
     }
 
     /// <summary>
@@ -1204,8 +1213,8 @@ namespace UnionGenerator.Attributes
     /// <summary>
     /// Generates asynchronous methods like BindAsync, MapAsync, and MatchAsync.
     /// </summary>
-    private void GenerateAsyncMethods(StringBuilder sb, string className, List<InternalUnionCase> cases,
-                                      System.Collections.Immutable.ImmutableArray<ITypeParameterSymbol> typeParameters)
+    private static void GenerateAsyncMethods(StringBuilder sb, string className, List<InternalUnionCase> cases,
+                                             System.Collections.Immutable.ImmutableArray<ITypeParameterSymbol> typeParameters)
     {
         if (cases.Count == 0) return;
 
@@ -1242,7 +1251,7 @@ namespace UnionGenerator.Attributes
                 sb.AppendLine("        {");
                 sb.AppendLine($"            if (this is {firstCase.Name}Case c) ");
                 sb.AppendLine("            {");
-                sb.AppendLine($"                var mapped = await mapper(c.Value).ConfigureAwait(false);");
+                sb.AppendLine("                var mapped = await mapper(c.Value).ConfigureAwait(false);");
                 sb.AppendLine($"                return {className}<TNew{restTypeArgs}>.{firstCase.Name}(mapped);");
                 sb.AppendLine("            }");
 
@@ -1258,20 +1267,21 @@ namespace UnionGenerator.Attributes
     /// <summary>
     /// Generates asynchronous extension methods for Task of Union.
     /// </summary>
-    private void GenerateAsyncExtensions(StringBuilder sb, string className, List<InternalUnionCase> cases,
-                                         System.Collections.Immutable.ImmutableArray<ITypeParameterSymbol> typeParameters)
+    private static void GenerateAsyncExtensions(StringBuilder sb, string className, List<InternalUnionCase> cases,
+                                                System.Collections.Immutable.ImmutableArray<ITypeParameterSymbol> typeParameters)
     {
         var typeArgs = typeParameters.Length > 0 ? "<" + string.Join(", ", typeParameters.Select(p => p.Name)) + ">" : "";
         var typeName = className + typeArgs;
 
-        // Wrapper types ResultAsync and OptionAsync (only if the class name matches by convention)
-        if (className == "Result" && cases.Count == 2 && typeParameters.Length == 2 && cases[0].Name == "Ok" && cases[1].Name == "Error")
+        switch (className)
         {
-            GenerateResultAsyncWrapper(sb, typeName, typeParameters);
-        }
-        else if (className == "Option" && cases.Count == 2 && typeParameters.Length == 1 && cases[0].Name == "Some" && cases[1].Name == "None")
-        {
-            GenerateOptionAsyncWrapper(sb, typeName, typeParameters);
+            // Wrapper types ResultAsync and OptionAsync (only if the class name matches by convention)
+            case "Result" when cases.Count == 2 && typeParameters.Length == 2 && cases[0].Name == "Ok" && cases[1].Name == "Error":
+                GenerateResultAsyncWrapper(sb, typeName, typeParameters);
+                break;
+            case "Option" when cases.Count == 2 && typeParameters.Length == 1 && cases[0].Name == "Some" && cases[1].Name == "None":
+                GenerateOptionAsyncWrapper(sb, typeName, typeParameters);
+                break;
         }
 
         sb.AppendLine($"    public static class {className}AsyncExtensions");
@@ -1314,7 +1324,7 @@ namespace UnionGenerator.Attributes
             sb.AppendLine($"this global::System.Threading.Tasks.Task<{typeName}> task, Func<{firstValueType}, Task<TResult>> selector)");
             sb.AppendLine("        {");
             sb.AppendLine("            var union = await task.ConfigureAwait(false);");
-            sb.AppendLine($"            return await union.BindAsync(selector).ConfigureAwait(false);");
+            sb.AppendLine("            return await union.BindAsync(selector).ConfigureAwait(false);");
             sb.AppendLine("        }");
             sb.AppendLine();
         }
@@ -1329,37 +1339,37 @@ namespace UnionGenerator.Attributes
         var e = typeParameters[1].Name;
 
         sb.AppendLine($@"
-    public readonly struct ResultAsync<{t}, {e}>
-    {{
-        private readonly Task<{resultTypeName}> _task;
-        public ResultAsync(Task<{resultTypeName}> task) => _task = task;
-        public Task<{resultTypeName}> AsTask() => _task;
-        public System.Runtime.CompilerServices.TaskAwaiter<{resultTypeName}> GetAwaiter() => _task.GetAwaiter();
+            public readonly struct ResultAsync<{t}, {e}>
+            {{
+                private readonly Task<{resultTypeName}> _task;
+                public ResultAsync(Task<{resultTypeName}> task) => _task = task;
+                public Task<{resultTypeName}> AsTask() => _task;
+                public System.Runtime.CompilerServices.TaskAwaiter<{resultTypeName}> GetAwaiter() => _task.GetAwaiter();
 
-        public async Task<TResult> MatchAsync<TResult>(Func<{t}, TResult> ok, Func<{e}, TResult> error)
-        {{
-            var res = await _task.ConfigureAwait(false);
-            return res.Match(ok, error);
-        }}
+                public async Task<TResult> MatchAsync<TResult>(Func<{t}, TResult> ok, Func<{e}, TResult> error)
+                {{
+                    var res = await _task.ConfigureAwait(false);
+                    return res.Match(ok, error);
+                }}
 
-        public async Task<ResultAsync<TNew, {e}>> MapAsync<TNew>(Func<{t}, Task<TNew>> mapper)
-        {{
-            var res = await _task.ConfigureAwait(false);
-            var mapped = await res.MapOkAsync(mapper).ConfigureAwait(false);
-            return new ResultAsync<TNew, {e}>(Task.FromResult(mapped));
-        }}
+                public async Task<ResultAsync<TNew, {e}>> MapAsync<TNew>(Func<{t}, Task<TNew>> mapper)
+                {{
+                    var res = await _task.ConfigureAwait(false);
+                    var mapped = await res.MapOkAsync(mapper).ConfigureAwait(false);
+                    return new ResultAsync<TNew, {e}>(Task.FromResult(mapped));
+                }}
 
-        public async Task<ResultAsync<TNew, {e}>> BindAsync<TNew>(Func<{t}, Task<Result<TNew, {e}>>> selector)
-        {{
-             var res = await _task.ConfigureAwait(false);
-             if (res is {resultTypeName}.OkCase c) 
-             {{
-                 return new ResultAsync<TNew, {e}>(selector(c.Value));
-             }}
-             return new ResultAsync<TNew, {e}>(Task.FromResult(Result<TNew, {e} >.Error(res.ErrorValue)));
-        }}
-    }}
-");
+                public async Task<ResultAsync<TNew, {e}>> BindAsync<TNew>(Func<{t}, Task<Result<TNew, {e}>>> selector)
+                {{
+                     var res = await _task.ConfigureAwait(false);
+                     if (res is {resultTypeName}.OkCase c) 
+                     {{
+                         return new ResultAsync<TNew, {e}>(selector(c.Value));
+                     }}
+                     return new ResultAsync<TNew, {e}>(Task.FromResult(Result<TNew, {e} >.Error(res.ErrorValue)));
+                }}
+            }}
+        ");
     }
 
     private static void GenerateOptionAsyncWrapper(StringBuilder sb, string optionTypeName,
@@ -1368,20 +1378,20 @@ namespace UnionGenerator.Attributes
         var t = typeParameters[0].Name;
 
         sb.AppendLine($@"
-    public readonly struct OptionAsync<{t}>
-    {{
-        private readonly Task<{optionTypeName}> _task;
-        public OptionAsync(Task<{optionTypeName}> task) => _task = task;
-        public Task<{optionTypeName}> AsTask() => _task;
-        public System.Runtime.CompilerServices.TaskAwaiter<{optionTypeName}> GetAwaiter() => _task.GetAwaiter();
+            public readonly struct OptionAsync<{t}>
+            {{
+                private readonly Task<{optionTypeName}> _task;
+                public OptionAsync(Task<{optionTypeName}> task) => _task = task;
+                public Task<{optionTypeName}> AsTask() => _task;
+                public System.Runtime.CompilerServices.TaskAwaiter<{optionTypeName}> GetAwaiter() => _task.GetAwaiter();
 
-        public async Task<TResult> MatchAsync<TResult>(Func<{t}, TResult> some, Func<TResult> none)
-        {{
-            var res = await _task.ConfigureAwait(false);
-            return res.Match(some, none);
-        }}
-    }}
-");
+                public async Task<TResult> MatchAsync<TResult>(Func<{t}, TResult> some, Func<TResult> none)
+                {{
+                    var res = await _task.ConfigureAwait(false);
+                    return res.Match(some, none);
+                }}
+            }}
+        ");
     }
 
     /// <summary>
@@ -1395,8 +1405,8 @@ namespace UnionGenerator.Attributes
     /// <summary>
     /// Generates functional operators like Bind, Tap, Fold, etc.
     /// </summary>
-    private void GenerateFunctionalOperators(StringBuilder sb, string className, List<InternalUnionCase> cases,
-                                             System.Collections.Immutable.ImmutableArray<ITypeParameterSymbol> typeParameters)
+    private static void GenerateFunctionalOperators(StringBuilder sb, string className, List<InternalUnionCase> cases,
+                                                    System.Collections.Immutable.ImmutableArray<ITypeParameterSymbol> typeParameters)
     {
         if (cases.Count == 0) return;
 
@@ -1418,7 +1428,7 @@ namespace UnionGenerator.Attributes
             sb.AppendLine("        }");
             sb.AppendLine();
 
-            // Tap - side effect without changing value
+            // Tap - side effect without changing the value
             sb.AppendLine("        /// <summary>");
             sb.AppendLine($"        /// Executes the action if this is {firstCase.Name} and returns the same instance.");
             sb.AppendLine("        /// </summary>");
@@ -1431,7 +1441,7 @@ namespace UnionGenerator.Attributes
             sb.AppendLine("        }");
             sb.AppendLine();
 
-            // Iter - Action for each case but focuses on first
+            // Iter - Action for each case but focuses on the first
             sb.AppendLine("        /// <summary>");
             sb.AppendLine($"        /// Executes the action if this is {firstCase.Name}.");
             sb.AppendLine("        /// </summary>");
@@ -1454,7 +1464,7 @@ namespace UnionGenerator.Attributes
             sb.AppendLine(
                 $"        public {className}<T1, T2> BiMap<T1, T2>(Func<{GetTypeName(c1.ValueType!)}, T1> map1, Func<{GetTypeName(c2.ValueType!)}, T2> map2)");
             sb.AppendLine("        {");
-            sb.AppendLine($"            return Match(");
+            sb.AppendLine("            return Match(");
             sb.AppendLine($"                {NormalizeParamName(c1.Name)}: v => {className}<T1, T2>.{c1.Name}(map1(v)),");
             sb.AppendLine($"                {NormalizeParamName(c2.Name)}: v => {className}<T1, T2>.{c2.Name}(map2(v))");
             sb.AppendLine("            );");
@@ -1486,7 +1496,10 @@ namespace UnionGenerator.Attributes
                                               System.Collections.Immutable.ImmutableArray<ITypeParameterSymbol> typeParameters)
     {
         // For simplicity and alignment with Result-like patterns, we focus on the first case for LINQ
-        if (cases.Count == 0 || cases[0].ValueType == null) return;
+        if (cases.Count == 0 || cases[0].ValueType == null)
+        {
+            return;
+        }
 
         var firstCase = cases[0];
         var firstValueType = GetTypeName(firstCase.ValueType ?? throw new InvalidOperationException());
@@ -1533,7 +1546,11 @@ namespace UnionGenerator.Attributes
         foreach (var c in cases)
         {
             var p = NormalizeParamName(c.Name);
-            if (c.Name == firstCase.Name) continue; // Handled above for intermediate success
+
+            if (c.Name == firstCase.Name)
+            {
+                continue; // Handled above for intermediate success
+            }
 
             sb.AppendLine(c.ValueType != null
                               ? $"                    {p}: v => {className}<TResult{restTypeArgs}>.{c.Name}(v),"
@@ -1582,7 +1599,10 @@ namespace UnionGenerator.Attributes
     private static void GenerateUtilityMethods(StringBuilder sb, string className, List<InternalUnionCase> cases,
                                                System.Collections.Immutable.ImmutableArray<ITypeParameterSymbol> typeParameters)
     {
-        if (cases.Count == 0 || cases[0].ValueType == null) return;
+        if (cases.Count == 0 || cases[0].ValueType == null)
+        {
+            return;
+        }
 
         var firstCase = cases[0];
         var firstValueType = GetTypeName(firstCase.ValueType ?? throw new InvalidOperationException());
@@ -1599,32 +1619,34 @@ namespace UnionGenerator.Attributes
         sb.AppendLine("        }");
         sb.AppendLine();
 
-        // Ensure
-        if (cases.Count == 2 && cases[1].ValueType != null)
+        if (cases.Count != 2 || cases[1].ValueType == null)
         {
-            var secondCase = cases[1];
-            var secondValueType = GetTypeName(secondCase.ValueType ?? throw new InvalidOperationException());
-            sb.AppendLine("        /// <summary>");
-            sb.AppendLine($"        /// Ensures a condition is met, otherwise returns the {secondCase.Name} case.");
-            sb.AppendLine("        /// </summary>");
-
-            sb.AppendLine(
-                $"        public {className}{typeArgs} Ensure(Func<{firstValueType}, bool> predicate, Func<{firstValueType}, {secondValueType}> errorFactory)");
-            sb.AppendLine("        {");
-            sb.AppendLine($"            if (this is {firstCase.Name}Case c)");
-            sb.AppendLine("            {");
-            sb.AppendLine($"                return predicate(c.Value) ? this : {className}{typeArgs}.{secondCase.Name}(errorFactory(c.Value));");
-            sb.AppendLine("            }");
-            sb.AppendLine("            return this;");
-            sb.AppendLine("        }");
-            sb.AppendLine();
+            return;
         }
+
+        // Ensure
+        var secondCase = cases[1];
+        var secondValueType = GetTypeName(secondCase.ValueType ?? throw new InvalidOperationException());
+        sb.AppendLine("        /// <summary>");
+        sb.AppendLine($"        /// Ensures a condition is met, otherwise returns the {secondCase.Name} case.");
+        sb.AppendLine("        /// </summary>");
+
+        sb.AppendLine(
+            $"        public {className}{typeArgs} Ensure(Func<{firstValueType}, bool> predicate, Func<{firstValueType}, {secondValueType}> errorFactory)");
+        sb.AppendLine("        {");
+        sb.AppendLine($"            if (this is {firstCase.Name}Case c)");
+        sb.AppendLine("            {");
+        sb.AppendLine($"                return predicate(c.Value) ? this : {className}{typeArgs}.{secondCase.Name}(errorFactory(c.Value));");
+        sb.AppendLine("            }");
+        sb.AppendLine("            return this;");
+        sb.AppendLine("        }");
+        sb.AppendLine();
     }
 
     /// <summary>
     /// Generates XML documentation for the union class.
     /// </summary>
-    private void GenerateUnionClassXmlDoc(StringBuilder sb, string className, List<InternalUnionCase> cases)
+    private static void GenerateUnionClassXmlDoc(StringBuilder sb, string className, List<InternalUnionCase> cases)
     {
         sb.AppendLine("    /// <summary>");
 
@@ -1646,23 +1668,23 @@ namespace UnionGenerator.Attributes
 
         if (exampleCase.ValueType != null)
         {
-            sb.AppendLine($"    /// <code>");
+            sb.AppendLine("    /// <code>");
             sb.AppendLine($"    /// var result = {className}.{exampleCase.Name}(value);");
             sb.AppendLine($"    /// if (result.Is{exampleCase.Name})");
-            sb.AppendLine($"    /// {{");
-            sb.AppendLine($"    ///     var value = result.Value;");
-            sb.AppendLine($"    /// }}");
-            sb.AppendLine($"    /// </code>");
+            sb.AppendLine("    /// {");
+            sb.AppendLine("    ///     var value = result.Value;");
+            sb.AppendLine("    /// }");
+            sb.AppendLine("    /// </code>");
         }
         else
         {
-            sb.AppendLine($"    /// <code>");
+            sb.AppendLine("    /// <code>");
             sb.AppendLine($"    /// var option = {className}.{exampleCase.Name}();");
             sb.AppendLine($"    /// if (option.Is{exampleCase.Name})");
-            sb.AppendLine($"    /// {{");
+            sb.AppendLine("    /// {");
             sb.AppendLine($"    ///     // Handle {exampleCase.Name} case");
-            sb.AppendLine($"    /// }}");
-            sb.AppendLine($"    /// </code>");
+            sb.AppendLine("    /// }");
+            sb.AppendLine("    /// </code>");
         }
 
         sb.AppendLine("    /// </example>");
@@ -1724,8 +1746,8 @@ namespace UnionGenerator.Attributes
     /// <summary>
     /// Generates the debugger proxy class for better visualization in the debugger.
     /// </summary>
-    private void GenerateDebuggerProxyClass(StringBuilder sb, string className, List<InternalUnionCase> cases,
-                                            System.Collections.Immutable.ImmutableArray<ITypeParameterSymbol> typeParameters)
+    private static void GenerateDebuggerProxyClass(StringBuilder sb, string className, List<InternalUnionCase> cases,
+                                                   System.Collections.Immutable.ImmutableArray<ITypeParameterSymbol> typeParameters)
     {
         var proxyClassName = $"{className}DebuggerProxy";
         var typeName = typeParameters.Length > 0 ? $"{className}<{string.Join(", ", typeParameters.Select(tp => tp.Name))}>" : className;

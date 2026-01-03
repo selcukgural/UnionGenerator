@@ -69,26 +69,61 @@ public sealed class PropertyBasedConvention : IStatusCodeConvention
         return statusCode is >= 100 and < 600;
     }
 
-    /// <summary>
+/// <summary>
     /// Creates a compiled property accessor for the given type.
     /// </summary>
-    /// <param name="errorType">The error type to analyze.</param>
-    /// <returns>A function that reads the status code property, or null if no suitable property exists.</returns>
+    /// <param name="errorType">The error type to analyze. Must not be null.</param>
+    /// <returns>
+    /// A function that reads the status code property, or null if no suitable property exists.
+    /// The returned delegate takes an object instance of <paramref name="errorType"/> and returns the integer status code.
+    /// </returns>
+    /// <remarks>
+    /// This implementation lists public instance properties once and builds a compiled
+    /// expression delegate for fast later access. This avoids repeated calls to
+    /// <see cref="Type.GetProperty(string,BindingFlags)"/> on the hot path.
+    /// The caller (concurrent cache) is expected to handle thread-safety for reuse.
+    /// </remarks>
     private static Func<object, int>? CreateAccessor(Type errorType)
-    {
-        foreach (var propName in PropertyNames)
+    { 
+        var properties = errorType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+    
+        foreach (var property in properties)
         {
-            var property = errorType.GetProperty(
-                propName,
-                BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty);
-
-            if (property != null && property.PropertyType == typeof(int) && property.CanRead)
+            if (property.PropertyType != typeof(int))
             {
-                // Create a compiled accessor for fast repeated access
-                return obj => (int)property.GetValue(obj)!;
+                continue;
             }
-        }
+    
+            if (!property.CanRead)
+            {
+                continue;
+            }
+    
+            var found = false;
+            foreach (var propertyName in PropertyNames)
+            {
+                if (!string.Equals(property.Name, propertyName, StringComparison.Ordinal))
+                {
+                    continue;
+                }
 
+                found = true;
+                break;
+            }
+    
+            if (!found)
+            {
+                continue;
+            }
+    
+            var parameter = System.Linq.Expressions.Expression.Parameter(typeof(object), "obj");
+            var cast = System.Linq.Expressions.Expression.Convert(parameter, errorType);
+            var propertyAccess = System.Linq.Expressions.Expression.Property(cast, property);
+            var convertToInt = System.Linq.Expressions.Expression.Convert(propertyAccess, typeof(int));
+            var lambda = System.Linq.Expressions.Expression.Lambda<Func<object, int>>(convertToInt, parameter);
+            return lambda.Compile();
+        }
+    
         return null;
     }
 }

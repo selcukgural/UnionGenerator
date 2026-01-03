@@ -56,7 +56,7 @@ public interface IUserService
 }
 
 /// <summary>
-/// In-memory implementation of user service for demonstration purposes.
+/// In-memory implementation of a user service for demonstration purposes.
 /// </summary>
 /// <remarks>
 /// This is a simple in-memory implementation for demonstration. In production,
@@ -66,9 +66,12 @@ public sealed class UserService : IUserService
 {
     private readonly List<User> _users =
     [
-        new User { Id = 1, Name = "John Doe", Email = "john@example.com", Age = 30 },
-        new User { Id = 2, Name = "Jane Smith", Email = "jane@example.com", Age = 25 },
-        new User { Id = 3, Name = "Bob Johnson", Email = "bob@example.com", Age = 35 }
+        new()
+            { Id = 1, Name = "John Doe", Email = "john@example.com", Age = 30 },
+        new()
+            { Id = 2, Name = "Jane Smith", Email = "jane@example.com", Age = 25 },
+        new()
+            { Id = 3, Name = "Bob Johnson", Email = "bob@example.com", Age = 35 }
     ];
 
     private int _nextId = 4;
@@ -154,7 +157,7 @@ public sealed class UserService : IUserService
             );
         }
 
-        // Check for duplicate email if email is being updated
+        // Check for duplicate email if the email is being updated
         if (dto.Email != null && !dto.Email.Equals(user.Email, StringComparison.OrdinalIgnoreCase))
         {
             if (_users.Any(u => u.Id != id && u.Email.Equals(dto.Email, StringComparison.OrdinalIgnoreCase)))
@@ -169,7 +172,7 @@ public sealed class UserService : IUserService
         }
 
         // Validate age if provided
-        if (dto.Age.HasValue && dto.Age.Value < 18)
+        if (dto.Age is < 18)
         {
             var errors = new Dictionary<string, string[]>
             {

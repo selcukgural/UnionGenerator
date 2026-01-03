@@ -18,20 +18,17 @@ public sealed class UnionPatternMatchingAnalyzer : DiagnosticAnalyzer
     /// <summary>
     /// Diagnostic descriptor for incomplete pattern matching.
     /// </summary>
-    private static readonly DiagnosticDescriptor IncompletePatternMatchingRule = new(
-        "UG1001",
-        "Incomplete pattern matching",
-        "Not all union cases are handled in pattern matching. Missing case(s): {0}.",
-        "UnionGenerator",
-        DiagnosticSeverity.Warning,
-        isEnabledByDefault: true,
-        description: "All union cases should be handled in pattern matching to avoid runtime exceptions.");
+    private static readonly DiagnosticDescriptor IncompletePatternMatchingRule = new("UG1001", "Incomplete pattern matching",
+                                                                                     "Not all union cases are handled in pattern matching. Missing case(s): {0}.",
+                                                                                     "UnionGenerator", DiagnosticSeverity.Warning,
+                                                                                     isEnabledByDefault: true,
+                                                                                     description:
+                                                                                     "All union cases should be handled in pattern matching to avoid runtime exceptions.");
 
     /// <summary>
     /// Gets the set of diagnostics produced by this analyzer.
     /// </summary>
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-        ImmutableArray.Create(IncompletePatternMatchingRule);
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(IncompletePatternMatchingRule);
 
     /// <summary>
     /// Initializes the analyzer by registering syntax node actions.
@@ -41,27 +38,19 @@ public sealed class UnionPatternMatchingAnalyzer : DiagnosticAnalyzer
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
         context.EnableConcurrentExecution();
 
-        context.RegisterSyntaxNodeAction(
-            AnalyzeSwitchExpression,
-            SyntaxKind.SwitchExpression);
+        context.RegisterSyntaxNodeAction(AnalyzeSwitchExpression, SyntaxKind.SwitchExpression);
 
-        context.RegisterSyntaxNodeAction(
-            AnalyzeSwitchStatement,
-            SyntaxKind.SwitchStatement);
+        context.RegisterSyntaxNodeAction(AnalyzeSwitchStatement, SyntaxKind.SwitchStatement);
 
-        context.RegisterSyntaxNodeAction(
-            AnalyzeIfStatement,
-            SyntaxKind.IfStatement);
+        context.RegisterSyntaxNodeAction(AnalyzeIfStatement, SyntaxKind.IfStatement);
 
-        context.RegisterSyntaxNodeAction(
-            AnalyzeMatchInvocation,
-            SyntaxKind.InvocationExpression);
+        context.RegisterSyntaxNodeAction(AnalyzeMatchInvocation, SyntaxKind.InvocationExpression);
     }
 
     /// <summary>
     /// Analyzes switch expressions for incomplete pattern matching.
     /// </summary>
-    private void AnalyzeSwitchExpression(SyntaxNodeAnalysisContext context)
+    private static void AnalyzeSwitchExpression(SyntaxNodeAnalysisContext context)
     {
         if (context.Node is not SwitchExpressionSyntax switchExpression)
         {
@@ -70,20 +59,23 @@ public sealed class UnionPatternMatchingAnalyzer : DiagnosticAnalyzer
 
         // Try to get union type from governing expression
         // If not found, try to infer from patterns
-        var unionType = GetUnionType(context, switchExpression.GoverningExpression) ?? InferUnionTypeFromPatterns(context, switchExpression.Arms.Select(a => a.Pattern));
+        var unionType = GetUnionType(context, switchExpression.GoverningExpression) ??
+                        InferUnionTypeFromPatterns(context, switchExpression.Arms.Select(a => a.Pattern));
 
         if (unionType == null)
         {
             return;
         }
 
-        var cases = GetUnionCases(unionType, context.SemanticModel);
+        var cases = GetUnionCases(unionType);
+
         if (cases.Count == 0)
         {
             return;
         }
 
         var handledCases = new HashSet<string>();
+
         foreach (var arm in switchExpression.Arms)
         {
             switch (arm.Pattern)
@@ -91,6 +83,7 @@ public sealed class UnionPatternMatchingAnalyzer : DiagnosticAnalyzer
                 case DeclarationPatternSyntax declarationPattern:
                 {
                     var caseName = ExtractCaseName(declarationPattern.Type);
+
                     if (!string.IsNullOrEmpty(caseName))
                     {
                         handledCases.Add(caseName);
@@ -101,6 +94,7 @@ public sealed class UnionPatternMatchingAnalyzer : DiagnosticAnalyzer
                 case TypePatternSyntax typePattern:
                 {
                     var caseName = ExtractCaseName(typePattern.Type);
+
                     if (!string.IsNullOrEmpty(caseName))
                     {
                         handledCases.Add(caseName);
@@ -117,7 +111,7 @@ public sealed class UnionPatternMatchingAnalyzer : DiagnosticAnalyzer
     /// <summary>
     /// Analyzes switch statements for incomplete pattern matching.
     /// </summary>
-    private void AnalyzeSwitchStatement(SyntaxNodeAnalysisContext context)
+    private static void AnalyzeSwitchStatement(SyntaxNodeAnalysisContext context)
     {
         if (context.Node is not SwitchStatementSyntax switchStatement)
         {
@@ -126,7 +120,7 @@ public sealed class UnionPatternMatchingAnalyzer : DiagnosticAnalyzer
 
         // Try to get union type from expression
         var unionType = GetUnionType(context, switchStatement.Expression);
-            
+
         // If not found, try to infer from patterns
         if (unionType == null)
         {
@@ -139,13 +133,15 @@ public sealed class UnionPatternMatchingAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        var cases = GetUnionCases(unionType, context.SemanticModel);
+        var cases = GetUnionCases(unionType);
+
         if (cases.Count == 0)
         {
             return;
         }
 
         var handledCases = new HashSet<string>();
+
         foreach (var section in switchStatement.Sections)
         {
             foreach (var label in section.Labels)
@@ -160,6 +156,7 @@ public sealed class UnionPatternMatchingAnalyzer : DiagnosticAnalyzer
                     case DeclarationPatternSyntax declarationPattern:
                     {
                         var caseName = ExtractCaseName(declarationPattern.Type);
+
                         if (!string.IsNullOrEmpty(caseName))
                         {
                             handledCases.Add(caseName);
@@ -170,6 +167,7 @@ public sealed class UnionPatternMatchingAnalyzer : DiagnosticAnalyzer
                     case TypePatternSyntax typePattern:
                     {
                         var caseName = ExtractCaseName(typePattern.Type);
+
                         if (!string.IsNullOrEmpty(caseName))
                         {
                             handledCases.Add(caseName);
@@ -187,7 +185,7 @@ public sealed class UnionPatternMatchingAnalyzer : DiagnosticAnalyzer
     /// <summary>
     /// Analyzes if statements for incomplete pattern matching.
     /// </summary>
-    private void AnalyzeIfStatement(SyntaxNodeAnalysisContext context)
+    private static void AnalyzeIfStatement(SyntaxNodeAnalysisContext context)
     {
         if (context.Node is not IfStatementSyntax ifStatement)
         {
@@ -202,7 +200,7 @@ public sealed class UnionPatternMatchingAnalyzer : DiagnosticAnalyzer
 
         // Try to get union type from expression
         var unionType = GetUnionType(context, isPattern.Expression);
-            
+
         // If not found, try to infer from a pattern
         if (unionType == null)
         {
@@ -212,8 +210,8 @@ public sealed class UnionPatternMatchingAnalyzer : DiagnosticAnalyzer
                 TypePatternSyntax typePattern               => GetUnionTypeFromCaseType(context, typePattern.Type),
                 _                                           => unionType
             };
-            
-            
+
+
             if (unionType == null)
             {
                 return;
@@ -221,15 +219,16 @@ public sealed class UnionPatternMatchingAnalyzer : DiagnosticAnalyzer
         }
 
 
-        var cases = GetUnionCases(unionType, context.SemanticModel);
+        var cases = GetUnionCases(unionType);
+
         if (cases.Count == 0)
         {
             return;
         }
 
-        // Collect all handled cases from if-else a chain
+        // Collect all handled cases from an if-else a chain
         var handledCases = new HashSet<string>();
-        CollectHandledCasesFromIfChain(ifStatement, handledCases, context);
+        CollectHandledCasesFromIfChain(ifStatement, handledCases);
 
         ReportMissingCases(context, ifStatement, cases, handledCases);
     }
@@ -237,7 +236,7 @@ public sealed class UnionPatternMatchingAnalyzer : DiagnosticAnalyzer
     /// <summary>
     /// Analyzes Match method invocations for incomplete pattern matching.
     /// </summary>
-    private void AnalyzeMatchInvocation(SyntaxNodeAnalysisContext context)
+    private static void AnalyzeMatchInvocation(SyntaxNodeAnalysisContext context)
     {
         if (context.Node is not InvocationExpressionSyntax invocation)
         {
@@ -255,12 +254,14 @@ public sealed class UnionPatternMatchingAnalyzer : DiagnosticAnalyzer
         }
 
         var unionType = GetUnionType(context, memberAccess.Expression);
+
         if (unionType == null)
         {
             return;
         }
 
-        var cases = GetUnionCases(unionType, context.SemanticModel);
+        var cases = GetUnionCases(unionType);
+
         if (cases.Count == 0)
         {
             return;
@@ -276,17 +277,14 @@ public sealed class UnionPatternMatchingAnalyzer : DiagnosticAnalyzer
 
         var missingCases = cases.Skip(argumentCount).ToList();
         var missingCasesText = string.Join(", ", missingCases);
-        var diagnostic = Diagnostic.Create(
-            IncompletePatternMatchingRule,
-            invocation.GetLocation(),
-            missingCasesText);
+        var diagnostic = Diagnostic.Create(IncompletePatternMatchingRule, invocation.GetLocation(), missingCasesText);
         context.ReportDiagnostic(diagnostic);
     }
 
     /// <summary>
     /// Gets the union type from an expression if it's a union type generated by UnionGenerator.
     /// </summary>
-    private INamedTypeSymbol? GetUnionType(SyntaxNodeAnalysisContext context, ExpressionSyntax? expression)
+    private static INamedTypeSymbol? GetUnionType(SyntaxNodeAnalysisContext context, ExpressionSyntax? expression)
     {
         if (expression == null)
         {
@@ -304,9 +302,9 @@ public sealed class UnionPatternMatchingAnalyzer : DiagnosticAnalyzer
         // Check if this type is a generated union type
         // We check for nested case classes which are generated by our generator
         // Also check for the GenerateUnion attribute as a fallback
-        var hasCaseClasses = type.GetMembers()
-                                 .OfType<INamedTypeSymbol>()
-                                 .Any(m => m.Name.EndsWith("Case", StringComparison.Ordinal) && m.IsSealed && SymbolEqualityComparer.Default.Equals(m.ContainingType, type));
+        var hasCaseClasses = type.GetMembers().OfType<INamedTypeSymbol>()
+                                 .Any(m => m.Name.EndsWith("Case", StringComparison.Ordinal) && m.IsSealed &&
+                                           SymbolEqualityComparer.Default.Equals(m.ContainingType, type));
 
         if (hasCaseClasses)
         {
@@ -315,10 +313,9 @@ public sealed class UnionPatternMatchingAnalyzer : DiagnosticAnalyzer
 
         // Fallback: Check if the type has GenerateUnion attribute
         // This helps when the type hasn't been fully resolved yet
-        var hasGenerateUnionAttribute = type.GetAttributes()
-                                            .Any(attr => attr.AttributeClass?.Name == "GenerateUnionAttribute" ||
-                                                         attr.AttributeClass?.Name == "GenerateUnion" ||
-                                                         (attr.AttributeClass?.ToDisplayString().Contains("GenerateUnion") ?? false));
+        var hasGenerateUnionAttribute = type.GetAttributes().Any(attr => attr.AttributeClass?.Name == "GenerateUnionAttribute" ||
+                                                                         attr.AttributeClass?.Name == "GenerateUnion" ||
+                                                                         (attr.AttributeClass?.ToDisplayString().Contains("GenerateUnion") ?? false));
 
         return hasGenerateUnionAttribute ? type : null;
     }
@@ -326,15 +323,13 @@ public sealed class UnionPatternMatchingAnalyzer : DiagnosticAnalyzer
     /// <summary>
     /// Gets all union cases from a union type.
     /// </summary>
-    private static List<string> GetUnionCases(INamedTypeSymbol unionType, SemanticModel semanticModel)
+    private static List<string> GetUnionCases(INamedTypeSymbol unionType)
     {
         var cases = new List<string>();
 
         // Find all nested case classes (they end with "Case")
-        var caseClasses = unionType.GetMembers()
-                                   .OfType<INamedTypeSymbol>()
-                                   .Where(m => m.Name.EndsWith("Case", StringComparison.Ordinal) && m.IsSealed)
-                                   .ToList();
+        var caseClasses = unionType.GetMembers().OfType<INamedTypeSymbol>()
+                                   .Where(m => m.Name.EndsWith("Case", StringComparison.Ordinal) && m.IsSealed).ToList();
 
         foreach (var caseClass in caseClasses)
         {
@@ -386,35 +381,41 @@ public sealed class UnionPatternMatchingAnalyzer : DiagnosticAnalyzer
     /// <summary>
     /// Collects handled cases from an if-else chain.
     /// </summary>
-    private static void CollectHandledCasesFromIfChain(IfStatementSyntax ifStatement, HashSet<string> handledCases, SyntaxNodeAnalysisContext context)
+    private static void CollectHandledCasesFromIfChain(IfStatementSyntax ifStatement, HashSet<string> handledCases)
     {
         var current = ifStatement;
+
         while (current != null)
         {
-            if (current.Condition is IsPatternExpressionSyntax isPattern)
+            if (current.Condition is not IsPatternExpressionSyntax isPattern)
             {
-                switch (isPattern.Pattern)
+                current = current.Else?.Statement as IfStatementSyntax;
+                continue;
+            }
+
+            switch (isPattern.Pattern)
+            {
+                case DeclarationPatternSyntax declarationPattern:
                 {
-                    case DeclarationPatternSyntax declarationPattern:
-                    {
-                        var caseName = ExtractCaseName(declarationPattern.Type);
-                        if (!string.IsNullOrEmpty(caseName))
-                        {
-                            handledCases.Add(caseName);
-                        }
+                    var caseName = ExtractCaseName(declarationPattern.Type);
 
-                        break;
-                    }
-                    case TypePatternSyntax typePattern:
+                    if (!string.IsNullOrEmpty(caseName))
                     {
-                        var caseName = ExtractCaseName(typePattern.Type);
-                        if (!string.IsNullOrEmpty(caseName))
-                        {
-                            handledCases.Add(caseName);
-                        }
-
-                        break;
+                        handledCases.Add(caseName);
                     }
+
+                    break;
+                }
+                case TypePatternSyntax typePattern:
+                {
+                    var caseName = ExtractCaseName(typePattern.Type);
+
+                    if (!string.IsNullOrEmpty(caseName))
+                    {
+                        handledCases.Add(caseName);
+                    }
+
+                    break;
                 }
             }
 
@@ -425,11 +426,7 @@ public sealed class UnionPatternMatchingAnalyzer : DiagnosticAnalyzer
     /// <summary>
     /// Reports missing cases as diagnostics.
     /// </summary>
-    private static void ReportMissingCases(
-        SyntaxNodeAnalysisContext context,
-        SyntaxNode node,
-        List<string> allCases,
-        HashSet<string> handledCases)
+    private static void ReportMissingCases(SyntaxNodeAnalysisContext context, SyntaxNode node, List<string> allCases, HashSet<string> handledCases)
     {
         var missingCases = allCases.Where(c => !handledCases.Contains(c)).ToList();
 
@@ -439,17 +436,14 @@ public sealed class UnionPatternMatchingAnalyzer : DiagnosticAnalyzer
         }
 
         var missingCasesText = string.Join(", ", missingCases);
-        var diagnostic = Diagnostic.Create(
-            IncompletePatternMatchingRule,
-            node.GetLocation(),
-            missingCasesText);
+        var diagnostic = Diagnostic.Create(IncompletePatternMatchingRule, node.GetLocation(), missingCasesText);
         context.ReportDiagnostic(diagnostic);
     }
 
     /// <summary>
     /// Infers the union type from patterns in a switch expression or statement.
     /// </summary>
-    private INamedTypeSymbol? InferUnionTypeFromPatterns(SyntaxNodeAnalysisContext context, IEnumerable<PatternSyntax> patterns)
+    private static INamedTypeSymbol? InferUnionTypeFromPatterns(SyntaxNodeAnalysisContext context, IEnumerable<PatternSyntax> patterns)
     {
         foreach (var pattern in patterns)
         {
@@ -482,13 +476,16 @@ public sealed class UnionPatternMatchingAnalyzer : DiagnosticAnalyzer
             case QualifiedNameSyntax qualifiedName:
             {
                 var typeInfo = context.SemanticModel.GetSymbolInfo(qualifiedName.Left);
-                if (typeInfo.Symbol is INamedTypeSymbol namedType)
+
+                if (typeInfo.Symbol is not INamedTypeSymbol namedType)
                 {
-                    // Check if this type has case classes
-                    if (namedType.GetMembers().OfType<INamedTypeSymbol>().Any(m => m.Name.EndsWith("Case", StringComparison.Ordinal) && m.IsSealed))
-                    {
-                        return namedType;
-                    }
+                    break;
+                }
+
+                // Check if this type has case classes
+                if (namedType.GetMembers().OfType<INamedTypeSymbol>().Any(m => m.Name.EndsWith("Case", StringComparison.Ordinal) && m.IsSealed))
+                {
+                    return namedType;
                 }
 
                 break;
@@ -497,11 +494,16 @@ public sealed class UnionPatternMatchingAnalyzer : DiagnosticAnalyzer
 
         // Try to get type info directly - this will resolve the case type
         var directTypeInfo = context.SemanticModel.GetSymbolInfo(typeSyntax);
+
+        INamedTypeSymbol? containingType;
+
         if (directTypeInfo.Symbol is INamedTypeSymbol caseType && caseType.Name.EndsWith("Case", StringComparison.Ordinal))
         {
             // This is a case class, get its containing type (the union type)
-            var containingType = caseType.ContainingType;
-            if (containingType != null && containingType.GetMembers().OfType<INamedTypeSymbol>().Any(m => m.Name.EndsWith("Case", StringComparison.Ordinal) && m.IsSealed))
+            containingType = caseType.ContainingType;
+
+            if (containingType != null && containingType.GetMembers().OfType<INamedTypeSymbol>()
+                                                        .Any(m => m.Name.EndsWith("Case", StringComparison.Ordinal) && m.IsSealed))
             {
                 return containingType;
             }
@@ -509,19 +511,19 @@ public sealed class UnionPatternMatchingAnalyzer : DiagnosticAnalyzer
 
         // Try to get type info from the type syntax itself
         var typeInfoFromSyntax = context.SemanticModel.GetTypeInfo(typeSyntax);
-
         if (typeInfoFromSyntax.Type is not INamedTypeSymbol typeFromInfo || !typeFromInfo.Name.EndsWith("Case", StringComparison.Ordinal))
         {
             return null;
         }
+        
+        containingType = typeFromInfo.ContainingType;
 
+        if (containingType != null && containingType.GetMembers().OfType<INamedTypeSymbol>()
+                                                    .Any(m => m.Name.EndsWith("Case", StringComparison.Ordinal) && m.IsSealed))
         {
-            var containingType = typeFromInfo.ContainingType;
-            if (containingType != null && containingType.GetMembers().OfType<INamedTypeSymbol>().Any(m => m.Name.EndsWith("Case", StringComparison.Ordinal) && m.IsSealed))
-            {
-                return containingType;
-            }
+            return containingType;
         }
+
 
         return null;
     }

@@ -6,12 +6,12 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace UnionGenerator;
 
 /// <summary>
-/// Syntax receiver that collects all classes marked with [GenerateUnion] attribute.
+/// Syntax receiver that collects all classes marked with the [GenerateUnion] attribute.
 /// </summary>
 internal sealed class UnionSyntaxReceiver : ISyntaxReceiver
 {
     /// <summary>
-    /// Gets the list of class declarations that are marked with [GenerateUnion] attribute.
+    /// Gets the list of class declarations that are marked with the [GenerateUnion] attribute.
     /// </summary>
     public List<ClassDeclarationSyntax> UnionClasses { get; } = new();
 
