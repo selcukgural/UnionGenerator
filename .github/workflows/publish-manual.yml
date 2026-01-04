@@ -1,0 +1,112 @@
+name: Publish to NuGet (Manual)
+
+# Manual trigger for publishing
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Package version (e.g., 0.1.0)'
+        required: true
+        type: string
+      publish_to_nuget:
+        description: 'Publish to NuGet.org'
+        required: true
+        type: boolean
+        default: true
+      create_github_release:
+        description: 'Create GitHub Release'
+        required: true
+        type: boolean
+        default: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+    
+    - name: Validate version format
+      run: |
+        if [[ ! "${{ inputs.version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?$ ]]; then
+          echo "Invalid version format. Expected format: X.Y.Z or X.Y.Z-suffix"
+          exit 1
+        fi
+        echo "Version validated: ${{ inputs.version }}"
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --configuration Release --no-restore /p:Version=${{ inputs.version }}
+    
+    - name: Run tests
+      run: dotnet test --configuration Release --no-build --verbosity normal
+    
+    - name: Pack NuGet packages
+      run: dotnet pack --configuration Release --no-build --output ./nupkgs /p:PackageVersion=${{ inputs.version }}
+    
+    - name: List generated packages
+      run: |
+        echo "Generated NuGet packages:"
+        ls -lh ./nupkgs/*.nupkg
+    
+    - name: Publish to NuGet.org
+      if: inputs.publish_to_nuget
+      run: |
+        dotnet nuget push ./nupkgs/*.nupkg \
+          --api-key ${{ secrets.NUGET_API_KEY }} \
+          --source https://api.nuget.org/v3/index.json \
+          --skip-duplicate
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+    
+    - name: Create Git tag
+      if: inputs.create_github_release
+      run: |
+        git config user.name "GitHub Actions"
+        git config user.email "actions@github.com"
+        git tag -a "v${{ inputs.version }}" -m "Release version ${{ inputs.version }}"
+        git push origin "v${{ inputs.version }}"
+    
+    - name: Create GitHub Release
+      if: inputs.create_github_release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v${{ inputs.version }}
+        name: Release v${{ inputs.version }}
+        files: ./nupkgs/*.nupkg
+        generate_release_notes: true
+        draft: false
+        prerelease: ${{ contains(inputs.version, 'alpha') || contains(inputs.version, 'beta') || contains(inputs.version, 'rc') }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Upload NuGet packages as artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: nuget-packages-v${{ inputs.version }}
+        path: ./nupkgs/*.nupkg
+        retention-days: 90
+    
+    - name: Publish summary
+      run: |
+        echo "## 📦 Publication Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Version:** ${{ inputs.version }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Published to NuGet:** ${{ inputs.publish_to_nuget }}" >> $GITHUB_STEP_SUMMARY
+        echo "**GitHub Release Created:** ${{ inputs.create_github_release }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Generated Packages" >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        ls -1 ./nupkgs/*.nupkg | xargs -n1 basename >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+
