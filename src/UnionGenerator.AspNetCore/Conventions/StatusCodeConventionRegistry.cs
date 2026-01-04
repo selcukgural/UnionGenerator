@@ -176,6 +176,27 @@ public sealed class StatusCodeConventionRegistry
     }
 
     /// <summary>
+    /// Creates a copy of this registry with all its conventions.
+    /// </summary>
+    /// <returns>A new registry instance with the same conventions.</returns>
+    /// <remarks>
+    /// This method is useful when you need to modify a registry without affecting the original.
+    /// Each convention reference is copied (shallow copy), but the registry itself is a new instance.
+    /// </remarks>
+    public StatusCodeConventionRegistry Clone()
+    {
+        var clone = new StatusCodeConventionRegistry();
+        lock (_lock)
+        {
+            foreach (var convention in _conventions)
+            {
+                clone._conventions.Add(convention);
+            }
+        }
+        return clone;
+    }
+
+    /// <summary>
     /// Creates the default registry with built-in conventions.
     /// </summary>
     /// <remarks>

@@ -53,7 +53,8 @@ public static class UnionServiceCollectionExtensions
         // Register a registry as singleton (thread-safe, immutable after config)
         services.AddSingleton(_ =>
         {
-            var registry = StatusCodeConventionRegistry.Default;
+            // Clone the default registry to avoid mutating the singleton
+            var registry = StatusCodeConventionRegistry.Default.Clone();
             
             // Apply any custom conventions if provided
             foreach (var convention in options.CustomConventions)
