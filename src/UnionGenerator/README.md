@@ -1,6 +1,6 @@
 # UnionGenerator
 
-High-performance source generator for creating discriminated unions (tagged unions) in C# with compile-time safety, pattern matching, and zero runtime overhead.
+Eliminate boilerplate discriminated union code with compile-time safety and zero runtime overhead. Use for error handling, multi-case returns, and type-safe state machines—without exceptions or nullable chains.
 
 ## 🚀 Quick Start (2 minutes)
 
@@ -43,6 +43,67 @@ string message = result.Match(
 ```
 
 **That's it!** You have a fully-featured discriminated union with pattern matching support.
+
+---
+
+## ❓ Why Discriminated Unions?
+
+### The Problem
+
+In C#, returning multiple possible types from a method is cumbersome:
+
+```csharp
+// ❌ Nullable chains (lose type info, hard to reason about)
+public User? GetUser(int id) { /* ... */ }
+var user = GetUser(1);
+if (user?.IsActive ?? false) { /* ... */ }
+
+// ❌ Exceptions for control flow (costly, lossy error context)
+public User GetUser(int id) {
+    throw new UserNotFoundException("User not found");
+}
+
+// ❌ Output parameters (awkward, less composable)
+public bool GetUser(int id, out User user, out string error) { /* ... */ }
+
+// ❌ Custom base classes (boilerplate, manual pattern matching)
+public abstract class GetUserResult { }
+public class Success : GetUserResult { public User Data { get; set; } }
+public class NotFound : GetUserResult { public string Message { get; set; } }
+```
+
+**Result**: Hard to reason about, boilerplate-heavy, error-prone.
+
+### The Solution: Discriminated Unions
+
+```csharp
+// ✅ One type, multiple cases, compile-time exhaustiveness checking
+[GenerateUnion]
+public partial class GetUserResult
+{
+    public static GetUserResult Success(User data) => new SuccessCase(data);
+    public static GetUserResult NotFound(string message) => new NotFoundCase(message);
+}
+
+// Usage: Clear intent, composable, type-safe
+var result = GetUser(1);
+var message = result switch
+{
+    { IsSuccess: true, Data: var user } => $"Found: {user.Name}",
+    { IsNotFound: true, Message: var msg } => $"Error: {msg}",
+};
+```
+
+### Benefits
+
+| Problem | Nullable? | Exceptions? | UnionGenerator? |
+|---------|-----------|-------------|-----------------|
+| **Multiple return types** | ❌ | ❌ | ✅ Type-safe |
+| **Non-happy-path handling** | ❌ Lossy | ❌ Costly | ✅ Integrated |
+| **Compile-time safety** | ❌ | ❌ | ✅ Exhaustiveness |
+| **Error context** | ✅ | ❌ Lose data | ✅ Structured |
+| **Composability** | ❌ Chains | ✅ But awkward | ✅ Natural |
+| **Performance** | ✅ | ❌ Stack unwinding | ✅ Zero overhead |
 
 ---
 
@@ -621,6 +682,37 @@ UnionGenerator.AspNetCore
 2. Ensure `IsSuccess`, `Data`, `Error` properties are accessible
 3. Use correct property names in patterns
 4. Check C# language version (11+ recommended)
+
+---
+
+## ⚠️ When NOT to Use
+
+UnionGenerator is powerful but not a fit for every scenario. Consider alternatives if:
+
+### 1. **Only One Success Case + One Error Case**
+- **Example**: `bool TryGetUser(int id, out User user, out string error)`
+- **Better**: Use `User? GetUser(int id)` (nullable) or throw exceptions for truly exceptional cases
+- **Why**: Nullable T is simpler cognitive load; unions shine with 3+ cases
+
+### 2. **Very Frequently Thrown Exceptions**
+- **Example**: Parsing millions of JSON objects where 90% fail
+- **Better**: Use Try-pattern (`bool TryParse()`) or keep exceptions—they're appropriate here
+- **Why**: Even zero-overhead unions add cognitive overhead; exceptions are optimized for rare failure paths here
+
+### 3. **Domain Objects with 30+ Internal States**
+- **Example**: Order with state machine (Pending → Processing → Shipped → Delivered → Returned)
+- **Better**: Use dedicated state machine library (Stateless, NStateMachine) or enum + separate validation logic
+- **Why**: Too many cases become hard to reason about and pattern match exhaustively
+
+### 4. **Simple Wrapper Types**
+- **Example**: `Result<T> { Ok(T), Err(string) }` where you only check `IsOk` property
+- **Better**: Use `(bool Success, T? Data, string? Error)` tuple or lightweight wrapper
+- **Why**: Overhead not justified; simpler types easier to reason about
+
+### 5. **Prototyping / MVP**
+- **Example**: "Let me add discriminated unions before we know if we need error handling"
+- **Better**: Start with exceptions or nullable; refactor to unions when pattern becomes clear
+- **Why**: Premature abstraction; let the code tell you when unions help
 
 ---
 

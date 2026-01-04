@@ -82,10 +82,11 @@ public static class UnionServiceCollectionExtensions
     /// Adds union result handling services with a custom convention registry.
     /// </summary>
     /// <param name="services">The service collection to configure.</param>
-    /// <param name="registryFactory">Factory function to create the convention registry.</param>
+    /// <param name="registryFactory">Factory function to create the convention registry. If null, uses default registry.</param>
     /// <returns>The service collection for chaining.</returns>
     /// <remarks>
     /// Use this overload when you need complete control over which conventions are registered.
+    /// If registryFactory is null, the default registry is used.
     /// </remarks>
     /// <example>
     /// <code>
@@ -99,9 +100,10 @@ public static class UnionServiceCollectionExtensions
     /// </example>
     public static IServiceCollection AddUnionResultHandling(
         this IServiceCollection services,
-        Func<IServiceProvider, StatusCodeConventionRegistry> registryFactory)
+        Func<IServiceProvider, StatusCodeConventionRegistry>? registryFactory)
     {
-        services.AddSingleton(registryFactory);
+        // If no factory provided, use default registry
+        services.AddSingleton(registryFactory ?? (_ => StatusCodeConventionRegistry.Default));
         services.AddScoped(_ => new UnionLoggingOptions());
         services.AddScoped<UnionResultLogger>((sp) =>
         {

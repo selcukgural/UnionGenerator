@@ -1,6 +1,57 @@
 # UnionGenerator.EntityFrameworkCore
 
-Entity Framework Core integration for UnionGenerator, providing value converters and model configuration extensions for storing Result union types in databases.
+Store complex Result union types in databases seamlessly. Automatically serialize/deserialize discriminated unions to JSON columns without manual mapping or boilerplate.
+
+## ❓ Why This Package?
+
+### The Problem
+
+Without JSON serialization, storing union results in databases is awkward:
+
+```csharp
+// ❌ Relational schema with separate tables (over-engineered)
+public class Order
+{
+    public int Id { get; set; }
+    public OrderData? SuccessData { get; set; }
+    public ErrorInfo? ErrorData { get; set; }
+    public bool IsSuccess { get; set; } // Redundant discriminator
+    
+    // Problem: Nullable hell, must maintain 3 fields, business logic unclear
+}
+
+// ❌ Or custom converters (boilerplate + error-prone)
+public class CustomResultConverter : ValueConverter<Result<OrderData, ErrorInfo>, string>
+{
+    // Manual serialization logic...
+}
+```
+
+### The Solution
+
+```csharp
+// ✅ Single JSON column, automatic conversion
+public class Order
+{
+    public int Id { get; set; }
+    public Result<OrderData, ErrorInfo> ProcessingResult { get; set; }
+}
+
+// In DbContext:
+modelBuilder.Entity<Order>()
+    .HasResultConversion(o => o.ProcessingResult);
+    
+// Database: ProcessingResult column stores {"case":"Ok","value":{...}}
+// Entity layer: Work with Result<T,E> naturally
+```
+
+**Benefits**:
+- **Single source of truth**: One JSON column instead of nullable parallel fields
+- **Automatic conversion**: EF handles serialization transparently
+- **Type-safe queries**: LINQ queries work directly on Result<T,E>
+- **Audit-friendly**: Full result history (success, failure, error details) in one place
+
+---
 
 ## Features
 

@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using OneOf;
 using OneOfExample.Models;
 using UnionGenerator.OneOfExtensions;

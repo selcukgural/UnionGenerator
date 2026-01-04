@@ -67,6 +67,16 @@ public class OneOfConverterGenerator : IIncrementalGenerator
                 return;
             }
 
+            // Check if OneOf library is available in the compilation
+            var oneOfSymbol = typeSymbol.ContainingModule.ReferencedAssemblySymbols
+                                        .FirstOrDefault(a => a.Name == "OneOf");
+            
+            if (oneOfSymbol == null)
+            {
+                // OneOf library not referenced; skip adapter generation
+                return;
+            }
+
             // Collect candidate factory methods: public static methods with one parameter returning the union type
             var candidateFactories = typeSymbol.GetMembers().OfType<IMethodSymbol>()
                                                .Where(m => m.IsStatic && m is { DeclaredAccessibility: Accessibility.Public, Parameters.Length: 1 })

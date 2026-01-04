@@ -1,6 +1,44 @@
 # JSON Serialization Example
 
-This example demonstrates how to use UnionGenerator for JSON serialization of discriminated unions.
+This example demonstrates how to use UnionGenerator for JSON serialization of discriminated unions—essential for APIs, message queues, and database storage.
+
+## ❓ Why Serialize Unions to JSON?
+
+### The Problem
+
+Without built-in serialization, unions are hard to send over the network:
+
+```csharp
+// ❌ Manual JSON construction (error-prone, verbose)
+var result = GetUser(id);
+var json = result.IsSuccess
+    ? JsonSerializer.Serialize(new { case = "Success", value = result.Data })
+    : JsonSerializer.Serialize(new { case = "Error", value = result.Error });
+
+// ❌ Or lose type information (not type-safe)
+public class ApiResponse
+{
+    public string Case { get; set; } // Stringly-typed!
+    public object? Value { get; set; } // What type is this?
+}
+```
+
+### The Solution
+
+```csharp
+// ✅ Direct serialization, type-safe
+[GenerateUnion]
+public partial class ApiResponse<T>
+{
+    public static ApiResponse<T> Success(T data) => new SuccessCase(data);
+    public static ApiResponse<T> Failed(ErrorInfo error) => new FailureCase(error);
+}
+
+var result = GetUser(id);
+var json = JsonSerializer.Serialize(result); // Just works!
+```
+
+---
 
 ## Features Demonstrated
 

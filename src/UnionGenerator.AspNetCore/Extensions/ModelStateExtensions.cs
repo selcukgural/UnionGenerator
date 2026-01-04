@@ -23,7 +23,7 @@ public static class ModelStateExtensions
     /// <param name="modelState">The model state dictionary containing validation errors.</param>
     /// <param name="instance">
     /// The request path or identifier where the validation error occurred.
-    /// Typically the current request path.
+    /// Typically, the current request path.
     /// </param>
     /// <returns>
     /// A <see cref="ProblemDetailsError"/> with status 400 and structured validation errors.
@@ -76,8 +76,9 @@ public static class ModelStateExtensions
         var errors = modelState.ToDictionary(
             kvp => kvp.Key,
             kvp => kvp.Value?.Errors
-                .Select(e => string.IsNullOrWhiteSpace(e.ErrorMessage) ? e.Exception?.Message ?? "Invalid value." : e.ErrorMessage)
+                .Select(e => !string.IsNullOrWhiteSpace(e.ErrorMessage) ? e.ErrorMessage : e.Exception?.Message)
                 .Where(msg => !string.IsNullOrWhiteSpace(msg))
+                .Cast<string>() // Safe cast - Where already filtered nulls
                 .ToArray() ?? []
         ).Where(kvp => kvp.Value.Length > 0)
          .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
@@ -120,6 +121,7 @@ public static class ModelStateExtensions
         string detail)
     {
         ArgumentNullException.ThrowIfNull(modelState);
+        ArgumentNullException.ThrowIfNull(detail);
 
         if (string.IsNullOrWhiteSpace(instance))
         {
@@ -139,8 +141,9 @@ public static class ModelStateExtensions
         var errors = modelState.ToDictionary(
             kvp => kvp.Key,
             kvp => kvp.Value?.Errors
-                .Select(e => string.IsNullOrWhiteSpace(e.ErrorMessage) ? e.Exception?.Message ?? "Invalid value." : e.ErrorMessage)
+                .Select(e => !string.IsNullOrWhiteSpace(e.ErrorMessage) ? e.ErrorMessage : e.Exception?.Message)
                 .Where(msg => !string.IsNullOrWhiteSpace(msg))
+                .Cast<string>() // Safe cast - Where already filtered nulls
                 .ToArray() ?? Array.Empty<string>()
         ).Where(kvp => kvp.Value.Length > 0)
          .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc;
-using System.Reflection;
+using UnionGenerator.AspNetCore.Caching;
 
 namespace UnionGenerator.AspNetCore.Filters;
 
@@ -103,34 +103,32 @@ public sealed class UnionResultFilter : IActionFilter
 
     /// <summary>
     /// Checks if a type appears to be a union type based on its properties.
+    /// Uses cached metadata for performance in high-throughput scenarios.
     /// </summary>
     private static bool IsUnionType(Type type)
     {
-        var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-        var propertyNames = properties.Where(p => p.PropertyType == typeof(bool))
-                                      .Select(p => p.Name)
-                                      .ToHashSet();
-
-        // Must have at least one success indicator property
-        return SuccessPropertyNames.Any(name => propertyNames.Contains(name));
+        var metadata = UnionPropertyCache.Default.GetMetadata(type);
+        return metadata?.IsValid ?? false;
     }
 
     /// <summary>
     /// Converts a union instance to an appropriate <see cref="IActionResult"/>.
+    /// Uses cached metadata to avoid repeated reflection.
     /// </summary>
     private static IActionResult ConvertUnionToActionResult(object union, Type unionType)
     {
-        var successProperty = FindProperty(unionType, SuccessPropertyNames);
-        if (successProperty == null)
+        var metadata = UnionPropertyCache.Default.GetMetadata(unionType);
+
+        if (metadata?.SuccessProperty == null)
         {
             throw new InvalidOperationException("Union type does not have a recognizable success property.");
         }
 
-        var isSuccess = (bool)(successProperty.GetValue(union) ?? false);
+        var isSuccess = (bool)(metadata.SuccessProperty.GetValue(union) ?? false);
 
         if (isSuccess)
         {
-            var valueProperty = unionType.GetProperty("Value");
+            var valueProperty = metadata.ValueProperty;
             if (valueProperty == null)
             {
                 throw new InvalidOperationException("Union type does not have a 'Value' property.");
@@ -140,13 +138,13 @@ public sealed class UnionResultFilter : IActionFilter
             return new OkObjectResult(value);
         }
 
-        var errorProperty = FindProperty(unionType, ErrorPropertyNames);
-        if (errorProperty == null)
+        var errorValueProperty = metadata.ErrorValueProperty;
+        if (errorValueProperty == null)
         {
             throw new InvalidOperationException("Union type does not have a recognizable error property.");
         }
 
-        var errorValue = errorProperty.GetValue(union);
+        var errorValue = errorValueProperty.GetValue(union);
 
         if (errorValue is ProblemDetailsError problemDetailsError)
         {
@@ -160,22 +158,6 @@ public sealed class UnionResultFilter : IActionFilter
         };
     }
 
-    /// <summary>
-    /// Finds a property by trying multiple possible names.
-    /// </summary>
-    private static PropertyInfo? FindProperty(Type type, string[] candidateNames)
-    {
-        foreach (var name in candidateNames)
-        {
-            var property = type.GetProperty(name);
-            if (property != null)
-            {
-                return property;
-            }
-        }
-
-        return null;
-    }
 
     /// <summary>
     /// Creates an ObjectResult from a ProblemDetailsError.

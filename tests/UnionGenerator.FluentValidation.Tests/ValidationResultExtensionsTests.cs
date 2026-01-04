@@ -1,6 +1,5 @@
 using FluentValidation;
 using FluentValidation.Results;
-using UnionGenerator.AspNetCore;
 using UnionGenerator.FluentValidation.Extensions;
 
 namespace UnionGenerator.FluentValidation.Tests;

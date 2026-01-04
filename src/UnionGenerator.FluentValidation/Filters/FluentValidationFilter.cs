@@ -106,7 +106,15 @@ public sealed class FluentValidationFilter : IAsyncActionFilter
 
             if (!validationResult.IsValid)
             {
-                var error = validationResult.ToProblemDetailsError(context.HttpContext.Request.Path);
+                var instance = context.HttpContext.Request.Path.Value;
+                if (string.IsNullOrWhiteSpace(instance))
+                {
+                    instance = "/";
+                }
+
+                var error = validationResult.ToProblemDetailsError(
+                    instance,
+                    context.HttpContext.RequestAborted);
                 context.Result = new ObjectResult(error)
                 {
                     StatusCode = error.Status

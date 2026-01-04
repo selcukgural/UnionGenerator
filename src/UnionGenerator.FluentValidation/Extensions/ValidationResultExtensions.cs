@@ -16,6 +16,10 @@ namespace UnionGenerator.FluentValidation.Extensions;
 /// are structured as a dictionary of field names to error message arrays.
 /// </para>
 /// <para>
+/// CancellationToken support: All methods support CancellationToken for graceful shutdown and timeout handling
+/// in async contexts. If cancellation is requested, methods return immediately with appropriate error states.
+/// </para>
+/// <para>
 /// Thread-safety: These extension methods are stateless and safe for concurrent use.
 /// </para>
 /// </remarks>
@@ -185,5 +189,142 @@ public static class ValidationResultExtensions
             ? null
             : validationResult.ToProblemDetailsError(instance);
     }
-}
 
+    /// <summary>
+    /// Converts a FluentValidation <see cref="ValidationResult"/> to a <see cref="ProblemDetailsError"/>
+    /// with support for cancellation.
+    /// </summary>
+    /// <param name="validationResult">The FluentValidation validation result.</param>
+    /// <param name="instance">
+    /// The request path or identifier where the validation error occurred.
+    /// Typically the current request path.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// Cancellation token for cooperative cancellation. If cancellation is requested,
+    /// the method returns immediately.
+    /// </param>
+    /// <returns>
+    /// A <see cref="ProblemDetailsError"/> with status 400 and structured validation errors.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">Thrown when validationResult or instance is null.</exception>
+    /// <exception cref="ArgumentException">
+    /// Thrown when validationResult is valid (contains no errors) or instance is whitespace.
+    /// </exception>
+    /// <exception cref="OperationCanceledException">Thrown when cancellationToken is cancelled.</exception>
+    /// <remarks>
+    /// <para>
+    /// This overload accepts a CancellationToken for graceful handling of shutdown, timeouts, and cancellation
+    /// in async request processing pipelines.
+    /// </para>
+    /// <para>
+    /// Performance: O(n) where n is the number of validation errors.
+    /// Groups errors in a single pass using LINQ GroupBy.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// var validator = new CreateUserValidator();
+    /// var validationResult = await validator.ValidateAsync(dto, cancellationToken);
+    /// 
+    /// if (!validationResult.IsValid)
+    /// {
+    ///     // CancellationToken propagated through
+    ///     var error = validationResult.ToProblemDetailsError(
+    ///         httpContext.Request.Path,
+    ///         cancellationToken
+    ///     );
+    ///     return Result&lt;User, ProblemDetailsError&gt;.Error(error);
+    /// }
+    /// </code>
+    /// </example>
+    public static ProblemDetailsError ToProblemDetailsError(
+        this ValidationResult validationResult,
+        string instance,
+        CancellationToken cancellationToken = default)
+    {
+        // Check for cancellation before processing
+        cancellationToken.ThrowIfCancellationRequested();
+
+        ArgumentNullException.ThrowIfNull(validationResult);
+
+        if (string.IsNullOrWhiteSpace(instance))
+        {
+            throw new ArgumentException("Instance cannot be null or whitespace.", nameof(instance));
+        }
+
+        if (validationResult.IsValid)
+        {
+            throw new ArgumentException("ValidationResult is valid; cannot create error from valid state.", nameof(validationResult));
+        }
+
+        // Check again after initial validation
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var errors = validationResult.Errors
+            .Where(e => !string.IsNullOrWhiteSpace(e.ErrorMessage))
+            .GroupBy(e => e.PropertyName)
+            .ToDictionary(
+                g => g.Key,
+                g => g.Select(e => e.ErrorMessage).ToArray()
+            );
+
+        return ProblemDetailsErrorFactory.Validation(errors, instance);
+    }
+
+    /// <summary>
+    /// Converts a FluentValidation <see cref="ValidationResult"/> to a <see cref="ProblemDetailsError"/>
+    /// with a custom detail message and cancellation support.
+    /// </summary>
+    /// <param name="validationResult">The FluentValidation validation result.</param>
+    /// <param name="instance">The request path or identifier where the validation error occurred.</param>
+    /// <param name="detail">Custom detail message to include in the error.</param>
+    /// <param name="cancellationToken">Cancellation token for cooperative cancellation.</param>
+    /// <returns>
+    /// A <see cref="ProblemDetailsError"/> with status 400, structured validation errors, and custom detail message.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">Thrown when validationResult, instance, or detail is null.</exception>
+    /// <exception cref="ArgumentException">
+    /// Thrown when validationResult is valid or instance/detail are whitespace.
+    /// </exception>
+    /// <exception cref="OperationCanceledException">Thrown when cancellationToken is cancelled.</exception>
+    public static ProblemDetailsError ToProblemDetailsError(
+        this ValidationResult validationResult,
+        string instance,
+        string detail,
+        CancellationToken cancellationToken = default)
+    {
+        // Check for cancellation before processing
+        cancellationToken.ThrowIfCancellationRequested();
+
+        ArgumentNullException.ThrowIfNull(validationResult);
+        ArgumentNullException.ThrowIfNull(detail);
+
+        if (string.IsNullOrWhiteSpace(instance))
+        {
+            throw new ArgumentException("Instance cannot be null or whitespace.", nameof(instance));
+        }
+
+        if (string.IsNullOrWhiteSpace(detail))
+        {
+            throw new ArgumentException("Detail cannot be null or whitespace.", nameof(detail));
+        }
+
+        if (validationResult.IsValid)
+        {
+            throw new ArgumentException("ValidationResult is valid; cannot create error from valid state.", nameof(validationResult));
+        }
+
+        // Check again after initial validation
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var errors = validationResult.Errors
+            .Where(e => !string.IsNullOrWhiteSpace(e.ErrorMessage))
+            .GroupBy(e => e.PropertyName)
+            .ToDictionary(
+                g => g.Key,
+                g => g.Select(e => e.ErrorMessage).ToArray()
+            );
+
+        return ProblemDetailsErrorFactory.Validation(errors, instance, detail);
+    }
+}

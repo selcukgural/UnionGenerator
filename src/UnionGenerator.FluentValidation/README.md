@@ -1,6 +1,52 @@
 # UnionGenerator.FluentValidation
 
-FluentValidation integration for UnionGenerator, providing seamless conversion of FluentValidation validation results to Result unions with ProblemDetails-compatible errors.
+Integrate FluentValidation seamlessly with UnionGenerator. Convert validation results to structured errors automatically, eliminating manual conversion logic and duplicate validation code.
+
+## ❓ Why This Package?
+
+### The Problem
+
+Without integration, you write validation twice and convert results manually:
+
+```csharp
+// ❌ Manual validation + conversion boilerplate
+[HttpPost]
+public IActionResult CreateUser(CreateUserDto dto)
+{
+    var validator = new CreateUserValidator();
+    var validationResult = await validator.ValidateAsync(dto);
+    
+    if (!validationResult.IsValid)
+    {
+        var errors = validationResult.Errors
+            .GroupBy(x => x.PropertyName)
+            .ToDictionary(
+                x => x.Key,
+                x => x.Select(e => e.ErrorMessage).ToArray()
+            );
+        return UnprocessableEntity(errors); // Tedious!
+    }
+    
+    var result = _service.CreateUser(dto);
+    return result.ToActionResult();
+}
+```
+
+### The Solution
+
+```csharp
+// ✅ Clean integration: automatic error handling with filter
+[HttpPost]
+[ServiceFilter(typeof(FluentValidationFilter))]
+public IActionResult CreateUser([FromBody] CreateUserDto dto)
+{
+    // If we reach here, DTO is valid
+    var result = _service.CreateUser(dto);
+    return result.ToActionResult(); // 400 for validation errors auto-handled
+}
+```
+
+---
 
 ## Features
 
@@ -10,11 +56,83 @@ FluentValidation integration for UnionGenerator, providing seamless conversion o
 - 📋 **Structured Errors**: Validation errors mapped to field → string[] format (RFC 7807 compatible)
 - 🚀 **Easy Setup**: Single method registration with `AddUnionFluentValidation()`
 
-## Installation
-
 ```bash
 dotnet add package UnionGenerator.FluentValidation
 ```
+
+## 🎯 Integration Patterns: Choose Your Style
+
+This package provides two ways to integrate FluentValidation. Pick based on your needs:
+
+### Pattern 1: **Manual Validation** (Fine-grained Control)
+
+When: You want custom validation logic per endpoint or need to control error handling flow.
+
+```csharp
+[HttpPost]
+public async Task<IActionResult> CreateUser(
+    [FromBody] CreateUserDto dto,
+    CancellationToken cancellationToken)
+{
+    var validationResult = await _validator.ValidateAsync(dto, cancellationToken);
+    
+    if (!validationResult.IsValid)
+    {
+        var error = validationResult.ToProblemDetailsError(HttpContext.Request.Path);
+        return Result<User, ProblemDetailsError>.Error(error).ToActionResult();
+    }
+    
+    var result = await _service.CreateUserAsync(dto, cancellationToken);
+    return Result<User, ProblemDetailsError>.Ok(result).ToActionResult();
+}
+```
+
+**Pros**:
+- Full control over validation flow
+- Can add custom business logic after validation
+- Single validator can be reused
+
+**Cons**:
+- Boilerplate repeated in each endpoint
+- Easy to forget validation in one endpoint
+
+### Pattern 2: **Action Filter** (Convention-Based, Automatic)
+
+When: You want automatic validation on all endpoints; follow REST conventions strictly.
+
+```csharp
+[HttpPost]
+[ServiceFilter(typeof(FluentValidationFilter))]
+public IActionResult CreateUser([FromBody] CreateUserDto dto)
+{
+    // If we reach here, validation passed automatically
+    var result = _service.CreateUser(dto);
+    return result.ToActionResult();
+}
+```
+
+**Pros**:
+- Zero boilerplate in controller
+- Consistent validation across all endpoints
+- Automatic 400 responses
+- Centralized validation rules
+
+**Cons**:
+- Less control (all-or-nothing validation)
+- Not ideal for complex validation logic
+
+### Comparison Table
+
+| Aspect | Manual | Filter |
+|--------|--------|--------|
+| **Setup Effort** | Medium (register validator) | Low (one attribute per endpoint) |
+| **Code per Endpoint** | 5-10 lines | 1 line + attribute |
+| **Reusability** | Single validator | Filter automatically applies |
+| **Custom Logic** | ✅ Full control | ❌ Limited |
+| **Error Handling** | ✅ Custom responses | ✅ Auto 400 |
+| **Recommended For** | Complex flows | Typical REST APIs |
+
+**Recommendation**: Start with **Pattern 2 (Filter)** for typical REST APIs. Use **Pattern 1 (Manual)** only when you need custom business logic after validation.
 
 ## Quick Start
 
@@ -126,7 +244,97 @@ public class UsersController : ControllerBase
 
 ## Advanced Usage
 
-### Async Validation with Error Check
+### CancellationToken Support
+
+All validation extension methods support `CancellationToken` for graceful shutdown and timeout handling.
+
+#### Pattern 1: Manual Validation with Cancellation
+
+```csharp
+[HttpPost]
+public async Task<IActionResult> CreateUser(
+    [FromBody] CreateUserDto dto,
+    CancellationToken cancellationToken)
+{
+    // Validate with cancellation token
+    var validationResult = await _validator.ValidateAsync(dto, cancellationToken);
+    
+    if (!validationResult.IsValid)
+    {
+        // CancellationToken propagates through error conversion
+        var error = validationResult.ToProblemDetailsError(
+            HttpContext.Request.Path,
+            cancellationToken
+        );
+        return Result<User, ProblemDetailsError>.Error(error).ToActionResult();
+    }
+    
+    var user = await _userService.CreateUserAsync(dto, cancellationToken);
+    return Result<User, ProblemDetailsError>.Ok(user).ToActionResult();
+}
+```
+
+#### Pattern 2: Async Pipeline with Cancellation
+
+```csharp
+[HttpPost]
+public async Task<IActionResult> CreateUser(
+    [FromBody] CreateUserDto dto,
+    CancellationToken cancellationToken)
+{
+    // One-liner: validate and convert error if invalid
+    var error = await _validator
+        .ValidateAsync(dto, cancellationToken)
+        .ToProblemDetailsErrorIfInvalidAsync(HttpContext.Request.Path, cancellationToken);
+    
+    if (error is not null)
+    {
+        return Result<User, ProblemDetailsError>.Error(error).ToActionResult();
+    }
+    
+    var user = await _userService.CreateUserAsync(dto, cancellationToken);
+    return Result<User, ProblemDetailsError>.Ok(user).ToActionResult();
+}
+```
+
+#### Pattern 3: FluentValidationFilter (Automatic)
+
+The filter automatically uses `HttpContext.RequestAborted` token:
+
+```csharp
+[HttpPost]
+[ServiceFilter(typeof(FluentValidationFilter))]
+public async Task<IActionResult> CreateUser(
+    [FromBody] CreateUserDto dto,
+    CancellationToken cancellationToken)
+{
+    // Validation already done with cancellation support
+    // RequestAborted token propagated automatically by filter
+    var user = await _userService.CreateUserAsync(dto, cancellationToken);
+    return Result<User, ProblemDetailsError>.Ok(user).ToActionResult();
+}
+```
+
+#### CancellationToken Best Practices
+
+1. **Always Propagate**: Pass `CancellationToken` through the entire async chain
+2. **Use RequestAborted**: In ASP.NET Core, use `HttpContext.RequestAborted` for client disconnection
+3. **Timeout Scenarios**: Create `CancellationTokenSource` with timeout for long-running validations
+4. **Graceful Shutdown**: `OperationCanceledException` is thrown when cancelled, handle it at boundaries
+
+```csharp
+// Timeout example
+using var cts = CancellationTokenSource.CreateLinkedTokenSource(
+    HttpContext.RequestAborted,
+    new CancellationTokenSource(TimeSpan.FromSeconds(5)).Token
+);
+
+var validationResult = await _validator.ValidateAsync(dto, cts.Token);
+```
+
+### Additional Patterns
+
+#### Async Validation with Error Check
 
 ```csharp
 [HttpPost]
@@ -158,7 +366,8 @@ if (!validationResult.IsValid)
 {
     var error = validationResult.ToProblemDetailsError(
         HttpContext.Request.Path,
-        "The user creation request failed validation. Please correct the errors and try again."
+        "The user creation request failed validation. Please correct the errors and try again.",
+        cancellationToken
     );
     return Result<User, ProblemDetailsError>.Error(error).ToActionResult();
 }
@@ -237,13 +446,15 @@ Validation errors are returned as RFC 7807 ProblemDetails with structured valida
 
 - `ToProblemDetailsError(ValidationResult, string)`: Convert validation result to ProblemDetailsError
 - `ToProblemDetailsError(ValidationResult, string, string)`: Convert with custom detail message
+- `ToProblemDetailsError(ValidationResult, string, CancellationToken)`: Convert with cancellation support
+- `ToProblemDetailsError(ValidationResult, string, string, CancellationToken)`: Convert with custom detail and cancellation support
 - `ToProblemDetailsErrorIfInvalidAsync(Task<ValidationResult>, string, CancellationToken)`: Async conversion with null return on success
 
 ### ServiceCollectionExtensions
 
-- `AddUnionFluentValidation(IServiceCollection, Action<ValidatorOptions>?)`: Register with default settings
-- `AddUnionFluentValidation<TAssemblyMarker>(IServiceCollection, Action<ValidatorOptions>?)`: Register with assembly scanning
-- `AddUnionFluentValidationWithLifetime<TAssemblyMarker>(IServiceCollection, ServiceLifetime, Action<ValidatorOptions>?)`: Register with custom lifetime
+- `AddUnionFluentValidation(IServiceCollection)`: Register with default settings
+- `AddUnionFluentValidation<TAssemblyMarker>(IServiceCollection)`: Register with assembly scanning
+- `AddUnionFluentValidationWithLifetime<TAssemblyMarker>(IServiceCollection, ServiceLifetime)`: Register with custom lifetime
 
 ### FluentValidationFilter
 

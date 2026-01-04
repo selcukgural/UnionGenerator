@@ -3,6 +3,7 @@ using AspNetCoreExample.Services;
 using Microsoft.AspNetCore.Mvc;
 using UnionGenerator.AspNetCore;
 using UnionGenerator.AspNetCore.Filters;
+using UnionGenerator.AspNetCore.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,6 +43,9 @@ if (app.Environment.IsDevelopment())
         options.RoutePrefix = string.Empty; // Serve Swagger UI at root
     });
 }
+
+// Add structured logging middleware for union results
+app.UseMiddleware<UnionResultLoggingMiddleware>();
 
 app.UseHttpsRedirection();
 app.UseAuthorization();

@@ -1,6 +1,71 @@
 # UnionGenerator.Analyzers
 
-Static analysis for Union types in C#. Detects common mistakes at compile time and provides helpful diagnostics.
+Catch union-related bugs at compile time. Detects common mistakes like forgetting HTTP status codes, wrong error types, and unsafe conversions—before they reach production.
+
+## ❓ Why These Analyzers?
+
+### The Problem
+
+Union types are powerful but easy to misuse:
+
+```csharp
+// ❌ Forgot to convert to IActionResult → returns wrong format
+public Result<User, NotFoundError> GetUser(int id)
+{
+    return _service.GetUser(id); // Oops! Returns union, not HTTP response
+}
+
+// ❌ Error type missing status code → 500 fallback
+public class DatabaseError 
+{
+    public string Message { get; set; }
+    // No [UnionStatusCode(code)] attribute!
+}
+
+// ❌ Unsafe conversion → runtime exception possible
+var result = (Result<User, Error>)someObject; // Cast can fail!
+
+// ❌ Unreachable error cases in pattern match
+var response = result switch
+{
+    { IsSuccess: true, Data: var user } => Ok(user),
+    { IsSuccess: false, Error: NotFoundError _ } => NotFound(),
+    // Missing case: ValidationError!
+};
+```
+
+These bugs are easy to introduce and hard to catch manually.
+
+### The Solution
+
+```csharp
+// ✅ Analyzer warns immediately (UG4010)
+// 🔴 Warn: Convert Result<T,E> to IActionResult using .ToActionResult()
+public IActionResult GetUser(int id)  // ← Fixed!
+{
+    return _service.GetUser(id).ToActionResult();
+}
+
+// ✅ Analyzer warns immediately (UG4011)
+// 🔴 Warn: Error type DatabaseError lacks [UnionStatusCode] attribute
+[UnionStatusCode(500)]  // ← Fixed!
+public class DatabaseError { /* ... */ }
+
+// ✅ Analyzer catches unsafe casts (UG4020)
+// ✅ Safe helper instead
+var result = Result<User, Error>.Ok(user);
+
+// ✅ Analyzer detects exhaustiveness violations (UG4030)
+// 🔴 Warn: Missing pattern case for 'ValidationError'
+var response = result switch
+{
+    { IsSuccess: true, Data: var user } => Ok(user),
+    { IsSuccess: false, Error: NotFoundError _ } => NotFound(),
+    { IsSuccess: false, Error: ValidationError _ } => UnprocessableEntity(),  // ← Added!
+};
+```
+
+---
 
 ## 🚀 Quick Start
 

@@ -1,6 +1,44 @@
 # UnionGenerator.OneOfExtensions
 
-Runtime extension methods to convert OneOf&lt;T0,T1&gt; values into UnionGenerator-created discriminated union types. Provides fluent, extension-method-based interoperability with the OneOf library.
+Convert OneOf types to UnionGenerator unions with a fluent, modern API. Includes built-in JSON serialization helpers for seamless OneOf integration.
+
+## ❓ Why This Package?
+
+### The Problem
+
+Converting OneOf values requires manual case handling or static helpers:
+
+```csharp
+// ❌ Manual case detection (verbose, error-prone)
+OneOf<User, string> oneOfResult = GetUserOneOf(1);
+
+if (oneOfResult.IsT0)
+{
+    var result = Result<User, string>.Ok(oneOfResult.AsT0);
+}
+else
+{
+    var result = Result<User, string>.Error(oneOfResult.AsT1);
+}
+
+// ❌ Static helper method (not fluent, reads awkwardly)
+var result = OneOfCompat.FromT0<Result<User, string>, User, string>(
+    oneOfResult.AsT0
+);
+```
+
+### The Solution
+
+```csharp
+// ✅ Fluent extension method (natural, readable, modern C#)
+OneOf<User, string> oneOfResult = GetUserOneOf(1);
+var result = oneOfResult.ToGeneratedResult<Result<User, string>, User, string>();
+
+// Also works great with JSON helpers:
+var json = result.ToJson(); // Automatic serialization
+```
+
+---
 
 ## 🚀 Quick Start (2 minutes)
 
@@ -58,6 +96,36 @@ Includes Newtonsoft.Json helpers for serializing/deserializing union results.
 
 ### ✅ Minimal Setup
 Just add package, no configuration needed.
+
+---
+
+## 🎯 OneOfExtensions vs OneOfCompat
+
+Choosing between the two OneOf adapter packages:
+
+| Feature | OneOfCompat | OneOfExtensions |
+|---------|---|---|
+| **API Style** | Static helpers | Extension methods (fluent) |
+| **Dependencies** | None (core only) | Newtonsoft.Json v13+ |
+| **OneOf Support** | v2.x, v3.x | v3.x only |
+| **Conversion Speed** | ~15-65 µs | ~10-35 µs (cached) |
+| **JSON Helpers** | ❌ No | ✅ Yes |
+| **Setup Effort** | Minimal | Minimal |
+| **Readability** | `FromT0<...>(value)` | `oneOf.ToGeneratedResult<...>()` |
+| **Recommended For** | Minimal dependencies | Standard projects, JSON needs |
+
+### Which Should You Choose?
+
+- **Choose OneOfCompat** if:
+  - You need zero external dependencies
+  - Supporting OneOf v2 is important
+  - You prefer static helper methods
+  
+- **Choose OneOfExtensions** if:
+  - You like fluent/extension method APIs (modern C# style)
+  - You already use Newtonsoft.Json
+  - You need JSON serialization helpers included
+  - You're only on OneOf v3+
 
 ---
 
@@ -353,4 +421,3 @@ MIT (same as UnionGenerator repository)
 | **OneOf v3 Native** | Modern library support |
 
 **Use when**: You're using OneOf v3 and want fluent conversion to UnionGenerator types with JSON support. For minimal dependencies, use OneOfCompat instead. 🚀
-

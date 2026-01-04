@@ -196,31 +196,78 @@ result.Match(
 );
 ```
 
-### Pattern 3: Adapter Function for Gradual Migration
+### Pattern 3: Gradual Migration with Adapter Functions
+
+**When**: Large codebase with many OneOf-dependent functions; want to migrate incrementally without rewriting everything at once.
+
+**Strategy**: Create adapter functions that wrap OneOf results and convert to UnionGenerator types at boundaries.
 
 ```csharp
-using OneOf;
-using UnionGenerator.OneOfCompat;
-
-// Helper function to convert all OneOf results
-public Result<T, E> ConvertOneOf<T, E>(OneOf<T, E> oneOf)
-    where T : class
-    where E : class
+// Step 1: Keep OneOf internally in legacy service
+public class LegacyUserService
 {
-    if (oneOf.IsT0)
+    public OneOf<User, string> GetUserLegacy(int id)
     {
-        return OneOfCompat.FromT0<Result<T, E>, T, E>(oneOf.AsT0);
-    }
-    else
-    {
-        return OneOfCompat.FromT1<Result<T, E>, T, E>(oneOf.AsT1);
+        // Old OneOf-based implementation
+        if (id <= 0) return "Invalid ID";
+        return new User { Id = id, Name = "John" };
     }
 }
 
-// Use in your code
-var oneOfResult = LegacyFunction();
-var result = ConvertOneOf(oneOfResult);
+// Step 2: Create adapter layer that bridges OneOf → UnionGenerator
+[GenerateUnion]
+public partial class UserResult
+{
+    public static UserResult Success(User user) => new SuccessCase(user);
+    public static UserResult NotFound(string message) => new NotFoundCase(message);
+}
+
+public class UserServiceAdapter
+{
+    private readonly LegacyUserService _legacy;
+
+    public UserServiceAdapter(LegacyUserService legacy)
+    {
+        _legacy = legacy;
+    }
+
+    // Adapter method: converts OneOf → UnionGenerator type
+    public UserResult GetUser(int id)
+    {
+        var legacyResult = _legacy.GetUserLegacy(id);
+
+        return legacyResult.Match(
+            user => UserResult.Success(user),
+            error => UserResult.NotFound(error)
+        );
+    }
+}
+
+// Step 3: Use adapter in new code
+var adapter = new UserServiceAdapter(legacyService);
+var result = adapter.GetUser(1); // Returns UserResult, not OneOf
+
+result.Match(
+    success: user => Console.WriteLine($"User: {user.Name}"),
+    notFound: msg => Console.WriteLine($"Error: {msg}")
+);
+
+// Step 4: Over time, rewrite legacy service to use UnionGenerator directly
+// Delete LegacyUserService once all callers migrated to adapter
 ```
+
+**Benefits**:
+- ✅ Incrementally migrate without big-bang rewrite
+- ✅ New code uses UnionGenerator immediately
+- ✅ Legacy code untouched until rewritten
+- ✅ Clear boundary between old and new patterns
+- ✅ Easy to track migration progress (adapter methods are the boundary)
+
+**Migration Checklist**:
+1. Create adapter service wrapping legacy OneOf service
+2. Update new code to use adapter (returns UnionGenerator types)
+3. Gradually rewrite legacy service to use UnionGenerator
+4. Delete adapter once legacy service fully rewritten
 
 ---
 
@@ -376,4 +423,3 @@ MIT (same as UnionGenerator repository)
 | **Backwards Compatible** | Works with OneOf v2 & v3 |
 
 **Use when**: You need to convert OneOf values to UnionGenerator types with minimal dependencies. For high-performance paths, use OneOfSourceGen instead. 🚀
-
