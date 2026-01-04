@@ -58,7 +58,7 @@ public partial class Result<T0,T1>
         var newDoc = await provider.AddAttributesAsync(doc, typeDecl, default);
         var newText = await newDoc.GetTextAsync();
         var s = newText.ToString();
-        Assert.Contains("DebuggerDisplay", s);
-        Assert.Contains("DebuggerTypeProxy", s);
+        Assert.Contains("DebuggerDisplay", s, StringComparison.Ordinal);
+        Assert.Contains("DebuggerTypeProxy", s, StringComparison.Ordinal);
     }
 }

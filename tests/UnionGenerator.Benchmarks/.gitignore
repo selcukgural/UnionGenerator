@@ -1,0 +1,18 @@
+# Build results
+bin/
+obj/
+
+# BenchmarkDotNet artifacts
+BenchmarkDotNet.Artifacts/
+*.md
+!README.md
+
+# IDE files
+.vs/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+.idea/
+

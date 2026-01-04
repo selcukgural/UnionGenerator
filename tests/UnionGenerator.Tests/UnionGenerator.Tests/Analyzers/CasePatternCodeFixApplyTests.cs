@@ -75,6 +75,6 @@ class C
         var provider = new global::UnionGenerator.Analyzers.CasePatternCodeFixProvider();
         var newDoc = await provider.ReplaceWithAdapterAsync(doc, ifNode, default);
         var newText = await newDoc.GetTextAsync();
-        Assert.Contains("FromOneOf<", newText.ToString());
+        Assert.Contains("FromOneOf<", newText.ToString(), StringComparison.Ordinal);
     }
 }
