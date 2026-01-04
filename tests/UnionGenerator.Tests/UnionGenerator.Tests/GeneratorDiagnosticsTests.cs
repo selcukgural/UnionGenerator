@@ -22,7 +22,7 @@ namespace TestNamespace
     }
 }            ";
 
-        var compilation = CreateCompilation(source);
+        var compilation = CreateTestCompilation(source);
         var generator = new UnionGenerator();
         var driver = CSharpGeneratorDriver.Create(generator);
         driver = (CSharpGeneratorDriver)driver.RunGenerators(compilation);
@@ -49,7 +49,7 @@ namespace TestNamespace
     }
 }            ";
 
-        var compilation = CreateCompilation(source);
+        var compilation = CreateTestCompilation(source);
         var generator = new UnionGenerator();
         var driver = CSharpGeneratorDriver.Create(generator);
         driver = (CSharpGeneratorDriver)driver.RunGenerators(compilation);
@@ -75,7 +75,7 @@ namespace TestNamespace
     }
 }            ";
 
-        var compilation = CreateCompilation(source);
+        var compilation = CreateTestCompilation(source);
         var generator = new UnionGenerator();
         var driver = CSharpGeneratorDriver.Create(generator);
         driver = (CSharpGeneratorDriver)driver.RunGenerators(compilation);
@@ -100,7 +100,7 @@ namespace TestNamespace
     }
 }            ";
 
-        var compilation = CreateCompilation(source);
+        var compilation = CreateTestCompilation(source);
         var generator = new UnionGenerator();
         var driver = CSharpGeneratorDriver.Create(generator);
         driver = (CSharpGeneratorDriver)driver.RunGenerators(compilation);
@@ -112,17 +112,29 @@ namespace TestNamespace
         Assert.DoesNotContain("UG9004", diags);
     }
 
-    private static Compilation CreateCompilation(string source)
+    private static Compilation CreateTestCompilation(string source)
     {
+        // Add the GenerateUnionAttribute source directly since it's no longer compiled into the generator assembly
+        var attributeSource = @"
+using System;
+namespace UnionGenerator.Attributes
+{
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+    public sealed class GenerateUnionAttribute : Attribute
+    {
+    }
+}";
+        
         var tree = CSharpSyntaxTree.ParseText(source);
+        var attributeTree = CSharpSyntaxTree.ParseText(attributeSource);
+        
         var refs = new[]
         {
             MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(Attribute).Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(IEnumerable<>).Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(global::UnionGenerator.Attributes.GenerateUnionAttribute).Assembly.Location)
+            MetadataReference.CreateFromFile(typeof(IEnumerable<>).Assembly.Location)
         };
 
-        return CSharpCompilation.Create("TestAssembly", [tree], refs, new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+        return CSharpCompilation.Create("TestAssembly", [tree, attributeTree], refs, new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
     }
 }

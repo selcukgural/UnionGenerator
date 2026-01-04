@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
 // No alias; use InternalUnionCase explicitly to avoid conflicts
@@ -29,17 +30,37 @@ public sealed class UnionGenerator : ISourceGenerator
     /// </summary>
     public void Execute(GeneratorExecutionContext context)
     {
-        // Embed the GenerateUnionAttribute so users don't need to reference it
-        context.AddSource("GenerateUnionAttribute.g.cs", SourceText.From(@"
+        // Only generate the attribute if it doesn't already exist in the compilation
+        // This prevents CS0436 warnings when referencing libraries that also use UnionGenerator
+        // Check both metadata (for compiled references) and source (for project references/generated code)
+        var attributeSymbol = context.Compilation.GetTypeByMetadataName("UnionGenerator.Attributes.GenerateUnionAttribute");
+        
+        // Also check if it's already defined in source (including previously generated code in this compilation)
+        var attributeExistsInSource = context.Compilation.SyntaxTrees
+            .Any(tree => tree.GetRoot()
+                .DescendantNodes()
+                .OfType<ClassDeclarationSyntax>()
+                .Any(c => c.Identifier.Text == "GenerateUnionAttribute" &&
+                         c.Parent is NamespaceDeclarationSyntax ns && ns.Name.ToString() == "UnionGenerator.Attributes" ||
+                         c.Parent is FileScopedNamespaceDeclarationSyntax fns && fns.Name.ToString() == "UnionGenerator.Attributes"));
+        
+        if (attributeSymbol == null && !attributeExistsInSource)
+        {
+            // Embed the GenerateUnionAttribute so users don't need to reference it
+            context.AddSource("GenerateUnionAttribute.g.cs", SourceText.From(@"
 using System;
 
 namespace UnionGenerator.Attributes
 {
+    /// <summary>
+    /// Marks a class as a discriminated union type that should have case classes and pattern matching properties generated.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public sealed class GenerateUnionAttribute : Attribute
     {
     }
 }", Encoding.UTF8));
+        }
 
         if (context.SyntaxReceiver is not UnionSyntaxReceiver receiver)
         {
@@ -327,15 +348,15 @@ namespace UnionGenerator.Attributes
         // Generate LINQ-like operators (Select, SelectMany, Where)
         GenerateLinqOperators(sb, className, cases, typeParameters);
 
-        // Generate utility methods (OrElseThrow, Ensure, etc.)
-        GenerateUtilityMethods(sb, className, cases, typeParameters);
-
-        // Generate Async methods (BindAsync, MapAsync, MatchAsync)
+        // Generate async methods (BindAsync, MapAsync, MatchAsync)
         GenerateAsyncMethods(sb, className, cases, typeParameters);
 
+        // Generate utility methods (OrElseThrow, Ensure, etc.)
+        GenerateUtilityMethods(sb, className, cases, typeParameters);
+        
         // Generate OrElse/Or methods
         GenerateOrElseMethods(sb, cases, typeParameters);
-
+        
         sb.AppendLine("    }");
 
         // Generate debugger proxy class (outside union class, at namespace level)
@@ -1236,7 +1257,8 @@ namespace UnionGenerator.Attributes
             sb.AppendLine("        }");
             sb.AppendLine();
 
-            // MapAsync
+            // MapAsync - only for generic unions with at least 2 type parameters
+            // This transforms the first type parameter while keeping the rest
             if (cases.Count == 2 && typeParameters.Length >= 2)
             {
                 var secondCase = cases[1];
@@ -1452,8 +1474,9 @@ namespace UnionGenerator.Attributes
             sb.AppendLine();
         }
 
-        // BiMap - for 2-case unions
-        if (cases.Count == 2 && cases[0].ValueType != null && cases[1].ValueType != null)
+        // BiMap - for 2-case unions (only for generic unions where type parameters match case count)
+        // Only generate BiMap when union has exactly as many type parameters as cases with values
+        if (typeParameters.Length == 2 && cases.Count == 2 && cases[0].ValueType != null && cases[1].ValueType != null)
         {
             var c1 = cases[0];
             var c2 = cases[1];
@@ -1491,10 +1514,18 @@ namespace UnionGenerator.Attributes
 
     /// <summary>
     /// Generates LINQ-like operators Select, SelectMany, and Where.
+    /// These operators are only generated for generic unions (e.g., Result&lt;T, E&gt;).
     /// </summary>
     private static void GenerateLinqOperators(StringBuilder sb, string className, List<InternalUnionCase> cases,
                                               System.Collections.Immutable.ImmutableArray<ITypeParameterSymbol> typeParameters)
     {
+        // LINQ operators only make sense for generic unions where we can transform the type parameter
+        // For non-generic unions, these would try to create invalid syntax like NonGenericType<TResult>
+        if (typeParameters.Length == 0)
+        {
+            return;
+        }
+
         // For simplicity and alignment with Result-like patterns, we focus on the first case for LINQ
         if (cases.Count == 0 || cases[0].ValueType == null)
         {

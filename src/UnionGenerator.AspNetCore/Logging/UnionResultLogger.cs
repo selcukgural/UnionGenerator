@@ -7,7 +7,7 @@ namespace UnionGenerator.AspNetCore.Logging;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Uses <see cref="LoggerMessage.Define"/> to create strongly typed, allocation-free logging methods.
+/// Uses LoggerMessage.Define pattern to create strongly typed, allocation-free logging methods.
 /// All logging in this class is structured (no string interpolation), which enables efficient filtering
 /// and analysis in log aggregation systems.
 /// </para>

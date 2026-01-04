@@ -1013,7 +1013,7 @@
             </summary>
             <remarks>
             <para>
-            Uses <see cref="M:Microsoft.Extensions.Logging.LoggerMessage.Define(Microsoft.Extensions.Logging.LogLevel,Microsoft.Extensions.Logging.EventId,System.String)"/> to create strongly typed, allocation-free logging methods.
+            Uses LoggerMessage.Define pattern to create strongly typed, allocation-free logging methods.
             All logging in this class is structured (no string interpolation), which enables efficient filtering
             and analysis in log aggregation systems.
             </para>
@@ -1378,6 +1378,11 @@
             );
             </code>
             </example>
+        </member>
+        <member name="T:UnionGenerator.Attributes.GenerateUnionAttribute">
+            <summary>
+            Marks a class as a discriminated union type that should have case classes and pattern matching properties generated.
+            </summary>
         </member>
     </members>
 </doc>

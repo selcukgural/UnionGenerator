@@ -34,20 +34,33 @@ namespace TestSrc
 }
 ";
 
+        // Add GenerateUnionAttribute since it's no longer in the generator assembly
+        var attributeSource = @"
+using System;
+namespace UnionGenerator.Attributes
+{
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+    public sealed class GenerateUnionAttribute : Attribute
+    {
+    }
+}";
+
         var syntaxTree = CSharpSyntaxTree.ParseText(SourceText.From(source, System.Text.Encoding.UTF8));
+        var attributeTree = CSharpSyntaxTree.ParseText(SourceText.From(attributeSource, System.Text.Encoding.UTF8));
+        
         var references = AppDomain.CurrentDomain.GetAssemblies()
                                   .Where(a => !a.IsDynamic && !string.IsNullOrEmpty(a.Location))
                                   .Select(a => MetadataReference.CreateFromFile(a.Location))
                                   .ToList();
 
-        var compilation = CSharpCompilation.Create("TestAssembly", [syntaxTree],
+        var compilation = CSharpCompilation.Create("TestAssembly", [syntaxTree, attributeTree],
                                                    references,
                                                    new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
         // Run generator
         var generator = new OneOfSourceGen.OneOfConverterGenerator();
         GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
-        driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out var outputCompilation, out var diagnostics);
+        _ = driver.RunGeneratorsAndUpdateCompilation(compilation, out var outputCompilation, out var diagnostics);
 
         // Ensure generator produced no errors
         Assert.False(diagnostics.Any(d => d.Severity == DiagnosticSeverity.Error));

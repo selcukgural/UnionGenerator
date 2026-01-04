@@ -8,7 +8,6 @@ UG3001 | Usage | Info | Suggests using generated adapter instead of OneOf IsT ch
 UG3002 | Usage | Info | Recommend adding debugger visualization attributes
 UG4010 | Usage | Info | Union return type should be mapped to IActionResult
 UG4011 | Usage | Info | Error union case lacks explicit status code attribute
-UG4012 | Usage | Hidden | Convention-based status code override recommended
 UG9002 | Usage | Warning | No union factory methods found for [GenerateUnion] type
 UG9003 | Usage | Warning | Factory method has multiple parameters
 UG9004 | Usage | Warning | Duplicate union case factory signature

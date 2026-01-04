@@ -14,5 +14,11 @@
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" PrivateAssets="all" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Exclude attribute from compilation - it's generated at runtime by the source generator -->
+    <Compile Remove="Attributes\GenerateUnionAttribute.cs" />
+    <!-- Keep it as content for reference/documentation -->
+    <None Include="Attributes\GenerateUnionAttribute.cs" />
+  </ItemGroup>
 
 </Project>

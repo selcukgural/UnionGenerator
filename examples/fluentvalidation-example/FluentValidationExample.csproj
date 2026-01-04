@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+      <TargetFramework>net8.0</TargetFramework>
+      <OutputType>Exe</OutputType>
+      <ImplicitUsings>enable</ImplicitUsings>
+      <Nullable>enable</Nullable>
+    </PropertyGroup>
+  
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\UnionGenerator\UnionGenerator\UnionGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+      <ProjectReference Include="..\..\src\UnionGenerator.AspNetCore\UnionGenerator.AspNetCore.csproj" />
+      <ProjectReference Include="..\..\src\UnionGenerator.FluentValidation\UnionGenerator.FluentValidation.csproj" />
+    </ItemGroup>
+  
+    <ItemGroup>
+      <PackageReference Include="FluentValidation" Version="11.9.0" />
+    </ItemGroup>
+  </Project>
