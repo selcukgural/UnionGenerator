@@ -4,6 +4,22 @@
     <LangVersion>11.0</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+
+    <!-- NuGet Package Metadata -->
+    <Version>0.1.0</Version>
+    <PackageId>UnionGenerator.OneOfCompat</PackageId>
+    <Authors>Selçuk Güral</Authors>
+    <Description>Runtime compatibility helpers for converting OneOf library types to UnionGenerator unions. Lightweight reflection-based interoperability for gradual migration.</Description>
+    <PackageTags>oneof;unions;migration;interop;compatibility</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/selcukgural/UnionGenerator</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/selcukgural/UnionGenerator</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IsPackable>true</IsPackable>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <!-- No external package dependencies required for the lightweight compatibility helpers -->
@@ -12,5 +28,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\UnionGenerator\UnionGenerator\UnionGenerator.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Include README for NuGet package -->
+    <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>

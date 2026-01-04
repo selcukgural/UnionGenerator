@@ -6,6 +6,22 @@
     <AssemblyName>UnionGenerator.Analyzers</AssemblyName>
     <PackageType>Analyzer</PackageType>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+
+    <!-- NuGet Package Metadata -->
+    <Version>0.1.0</Version>
+    <PackageId>UnionGenerator.Analyzers</PackageId>
+    <Authors>Selçuk Güral</Authors>
+    <Description>Roslyn analyzers for UnionGenerator. Catches union-related bugs at compile time including missing status codes, unsafe conversions, and pattern matching issues.</Description>
+    <PackageTags>roslyn;analyzer;unions;diagnostics;code-quality</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/selcukgural/UnionGenerator</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/selcukgural/UnionGenerator</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IsPackable>true</IsPackable>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,6 +38,16 @@
   <ItemGroup>
     <AdditionalFiles Include="AnalyzerReleases.Shipped.md" />
     <AdditionalFiles Include="AnalyzerReleases.Unshipped.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Include README for NuGet package -->
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <!-- Package analyzer assembly in the correct NuGet path -->
+  <ItemGroup>
+    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 </Project>
 

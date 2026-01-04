@@ -5,8 +5,22 @@
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <IncludeBuildOutput>false</IncludeBuildOutput>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+
+    <!-- NuGet Package Metadata -->
+    <Version>0.1.0</Version>
+    <PackageId>UnionGenerator</PackageId>
+    <Authors>Selçuk Güral</Authors>
+    <Description>Compile-time discriminated union source generator for C#. Eliminate boilerplate code with zero runtime overhead, full pattern matching support, and type-safe error handling.</Description>
+    <PackageTags>source-generator;unions;discriminated-unions;roslyn;codegen;functional;result;either</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/selcukgural/UnionGenerator</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/selcukgural/UnionGenerator</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IsPackable>true</IsPackable>
+    <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,6 +33,11 @@
     <Compile Remove="Attributes\GenerateUnionAttribute.cs" />
     <!-- Keep it as content for reference/documentation -->
     <None Include="Attributes\GenerateUnionAttribute.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Include README for NuGet package -->
+    <None Include="../README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>

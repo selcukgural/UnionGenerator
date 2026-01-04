@@ -6,6 +6,20 @@
     <LangVersion>12.0</LangVersion>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
+
+    <!-- NuGet Package Metadata -->
+    <Version>0.1.0</Version>
+    <PackageId>UnionGenerator.EntityFrameworkCore</PackageId>
+    <Authors>Selçuk Güral</Authors>
+    <Description>Entity Framework Core integration for UnionGenerator. Automatically serializes discriminated unions to JSON columns with value converters for seamless database persistence.</Description>
+    <PackageTags>entityframework;efcore;unions;json;database;orm</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/selcukgural/UnionGenerator</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/selcukgural/UnionGenerator</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IsPackable>true</IsPackable>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,6 +30,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\UnionGenerator\UnionGenerator\UnionGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Include README for NuGet package -->
+    <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>
 

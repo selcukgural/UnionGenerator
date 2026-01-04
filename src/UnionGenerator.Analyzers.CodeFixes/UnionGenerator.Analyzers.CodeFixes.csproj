@@ -6,6 +6,22 @@
     <AssemblyName>UnionGenerator.Analyzers.CodeFixes</AssemblyName>
     <PackageType>Analyzer</PackageType>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+
+    <!-- NuGet Package Metadata -->
+    <Version>0.1.0</Version>
+    <PackageId>UnionGenerator.Analyzers.CodeFixes</PackageId>
+    <Authors>Selçuk Güral</Authors>
+    <Description>Code fix providers for UnionGenerator analyzers. Provides automatic fixes for union-related diagnostic warnings including pattern matching, status codes, and conversions.</Description>
+    <PackageTags>roslyn;analyzer;code-fixes;refactoring;unions</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/selcukgural/UnionGenerator</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/selcukgural/UnionGenerator</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IsPackable>true</IsPackable>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,6 +41,16 @@
   <ItemGroup>
     <AdditionalFiles Include="AnalyzerReleases.Shipped.md" />
     <AdditionalFiles Include="AnalyzerReleases.Unshipped.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Include README for NuGet package -->
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <!-- Package analyzer assembly in the correct NuGet path -->
+  <ItemGroup>
+    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 </Project>
 

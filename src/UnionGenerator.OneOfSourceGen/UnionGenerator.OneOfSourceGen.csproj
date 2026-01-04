@@ -5,8 +5,23 @@
     <Nullable>enable</Nullable>
     <AssemblyName>UnionGenerator.OneOfSourceGen</AssemblyName>
     <PackageType>Analyzer</PackageType>
-    <!-- Stronger analyzer rules enforcement recommended for generators -->
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+
+    <!-- NuGet Package Metadata -->
+    <Version>0.1.0</Version>
+    <PackageId>UnionGenerator.OneOfSourceGen</PackageId>
+    <Authors>Selçuk Güral</Authors>
+    <Description>Compile-time source generator for converting OneOf types to UnionGenerator unions. Zero-overhead compile-time conversion without runtime reflection.</Description>
+    <PackageTags>source-generator;oneof;unions;roslyn;codegen;compile-time</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/selcukgural/UnionGenerator</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/selcukgural/UnionGenerator</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IsPackable>true</IsPackable>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,5 +34,14 @@
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" PrivateAssets="all" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Include README for NuGet package -->
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <!-- Package analyzer assembly in the correct NuGet path -->
+  <ItemGroup>
+    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+  </ItemGroup>
 </Project>
 
