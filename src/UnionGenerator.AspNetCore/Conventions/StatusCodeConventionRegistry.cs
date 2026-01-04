@@ -1,3 +1,5 @@
+using System.Collections.Immutable;
+
 namespace UnionGenerator.AspNetCore.Conventions;
 
 /// <summary>
@@ -9,21 +11,24 @@ namespace UnionGenerator.AspNetCore.Conventions;
 /// and evaluates them in priority order when inferring status codes from error values.
 /// </para>
 /// <para>
-/// Thread-safety: This class is thread-safe for reads after initial configuration.
-/// Avoid modifying the registry (Register/Clear) after the application startup.
+/// Thread-safety: This class is fully thread-safe. Uses <see cref="ImmutableArray{T}"/>
+/// for lock-free concurrent reads and copy-on-write semantics for modifications.
+/// Modifications (Register/Clear) can be called at any time, but are relatively expensive
+/// due to array copying. Design for infrequent modifications (startup/configuration time).
 /// </para>
 /// <para>
 /// Default conventions (in order of priority):
 /// <list type="number">
-/// <item><description><see cref="ProblemDetailsConvention"/> (Priority: 100)</description></item>
+/// <item><description><see cref="AttributeBasedConvention"/> (Priority: 100)</description></item>
 /// <item><description><see cref="PropertyBasedConvention"/> (Priority: 75)</description></item>
+/// <item><description><see cref="ProblemDetailsConvention"/> (Priority: 50)</description></item>
 /// <item><description><see cref="NameBasedConvention"/> (Priority: 50)</description></item>
 /// </list>
 /// </para>
 /// </remarks>
 public sealed class StatusCodeConventionRegistry
 {
-    private readonly List<IStatusCodeConvention> _conventions;
+    private ImmutableArray<IStatusCodeConvention> _conventions;
     private readonly object _lock = new();
 
     /// <summary>
@@ -31,7 +36,7 @@ public sealed class StatusCodeConventionRegistry
     /// </summary>
     public StatusCodeConventionRegistry()
     {
-        _conventions = [];
+        _conventions = ImmutableArray<IStatusCodeConvention>.Empty;
     }
 
     /// <summary>
@@ -48,8 +53,14 @@ public sealed class StatusCodeConventionRegistry
     /// <param name="convention">The convention to register. Must not be null.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="convention"/> is null.</exception>
     /// <remarks>
+    /// <para>
     /// Conventions are automatically sorted by priority after registration.
-    /// Avoid calling this method after the application startup for thread-safety.
+    /// This method is thread-safe and can be called at any time.
+    /// </para>
+    /// <para>
+    /// Performance: O(n log n) due to sorting. Uses copy-on-write semantics,
+    /// so modifications are relatively expensive. Design for infrequent updates.
+    /// </para>
     /// </remarks>
     public void Register(IStatusCodeConvention convention)
     {
@@ -57,9 +68,15 @@ public sealed class StatusCodeConventionRegistry
 
         lock (_lock)
         {
-            _conventions.Add(convention);
+            // Copy-on-write: create new sorted array
+            var builder = _conventions.ToBuilder();
+            builder.Add(convention);
+            
             // Sort by priority descending (highest first)
-            _conventions.Sort((a, b) => b.Priority.CompareTo(a.Priority));
+            builder.Sort((a, b) => b.Priority.CompareTo(a.Priority));
+            
+            // Atomic swap
+            _conventions = builder.ToImmutable();
         }
     }
 
@@ -75,8 +92,18 @@ public sealed class StatusCodeConventionRegistry
     /// <c>true</c> if any convention successfully inferred a status code; otherwise, <c>false</c>.
     /// </returns>
     /// <remarks>
+    /// <para>
     /// Conventions are evaluated in priority order. The first convention that returns
     /// true determines the final status code.
+    /// </para>
+    /// <para>
+    /// Thread-safety: This method is lock-free and fully thread-safe.
+    /// Uses a local snapshot of the immutable convention array.
+    /// </para>
+    /// <para>
+    /// Performance: O(n) where n is the number of conventions. Lock-free read
+    /// ensures no contention even under high concurrent load.
+    /// </para>
     /// </remarks>
     /// <example>
     /// <code>
@@ -100,10 +127,11 @@ public sealed class StatusCodeConventionRegistry
             return false;
         }
 
-        // No lock needed for reads - List<T> is safe for concurrent reads
-        // as long as no writes occur (which should only happen at startup)
-        // ReSharper disable once InconsistentlySynchronizedField
-        foreach (var convention in _conventions)
+        // Lock-free read: ImmutableArray is thread-safe for concurrent reads
+        // Get local snapshot to avoid issues if registry is modified during iteration
+        var conventions = _conventions;
+        
+        foreach (var convention in conventions)
         {
             if (convention.TryGetStatusCode(error, out statusCode))
             {
@@ -138,41 +166,39 @@ public sealed class StatusCodeConventionRegistry
     /// Clears all registered conventions.
     /// </summary>
     /// <remarks>
-    /// Use this method only in testing scenarios. Avoid calling after application startup.
+    /// Thread-safe. Can be called at any time.
+    /// Primarily intended for testing scenarios where registry reset is needed.
     /// </remarks>
     public void Clear()
     {
         lock (_lock)
         {
-            _conventions.Clear();
+            _conventions = ImmutableArray<IStatusCodeConvention>.Empty;
         }
     }
 
     /// <summary>
-    /// Gets the count of registered conventions.
+    /// Gets the current number of registered conventions.
     /// </summary>
     /// <value>The number of conventions currently registered.</value>
-    public int Count
-    {
-        get
-        {
-            lock (_lock)
-            {
-                return _conventions.Count;
-            }
-        }
-    }
+    /// <remarks>
+    /// Thread-safe. Lock-free read operation.
+    /// </remarks>
+    public int Count => _conventions.Length;
 
     /// <summary>
     /// Gets a read-only snapshot of currently registered conventions.
     /// </summary>
-    /// <returns>An array of conventions sorted by priority (highest first).</returns>
+    /// <returns>An immutable array of conventions sorted by priority (highest first).</returns>
+    /// <remarks>
+    /// Thread-safe. Returns the current immutable snapshot without copying.
+    /// The returned array cannot be modified and is safe to enumerate concurrently.
+    /// </remarks>
     public IReadOnlyList<IStatusCodeConvention> GetConventions()
     {
-        lock (_lock)
-        {
-            return _conventions.ToArray();
-        }
+        // No lock needed - ImmutableArray is already thread-safe
+        // Return the array directly; it's immutable so no defensive copy needed
+        return _conventions;
     }
 
     /// <summary>
@@ -180,20 +206,30 @@ public sealed class StatusCodeConventionRegistry
     /// </summary>
     /// <returns>A new registry instance with the same conventions.</returns>
     /// <remarks>
+    /// <para>
     /// This method is useful when you need to modify a registry without affecting the original.
-    /// Each convention reference is copied (shallow copy), but the registry itself is a new instance.
+    /// The new registry shares the same convention instances (shallow copy) but maintains
+    /// its own independent collection.
+    /// </para>
+    /// <para>
+    /// Thread-safe. Takes a snapshot of current conventions.
+    /// </para>
     /// </remarks>
     public StatusCodeConventionRegistry Clone()
     {
-        var clone = new StatusCodeConventionRegistry();
         lock (_lock)
         {
-            foreach (var convention in _conventions)
-            {
-                clone._conventions.Add(convention);
-            }
+            // Create clone with private constructor that accepts conventions
+            return new StatusCodeConventionRegistry(_conventions);
         }
-        return clone;
+    }
+
+    /// <summary>
+    /// Private constructor for cloning with existing conventions.
+    /// </summary>
+    private StatusCodeConventionRegistry(ImmutableArray<IStatusCodeConvention> conventions)
+    {
+        _conventions = conventions;
     }
 
     /// <summary>

@@ -178,7 +178,8 @@ public static class UnionActionResultExtensions
         ArgumentNullException.ThrowIfNull(union);
         ArgumentNullException.ThrowIfNull(errorMapper);
 
-        var unionType = union.GetType();
+        // Performance: Use typeof(TUnion) instead of GetType() to avoid reflection overhead
+        var unionType = typeof(TUnion);
         var metadata = UnionPropertyCache.Default.GetMetadata(unionType);
 
         if (metadata?.SuccessProperty == null)

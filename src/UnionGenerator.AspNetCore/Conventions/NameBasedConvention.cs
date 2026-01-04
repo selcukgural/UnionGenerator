@@ -75,8 +75,14 @@ public sealed class NameBasedConvention : IStatusCodeConvention
         }
 
         // Check for partial matches (e.g., "UserNotFoundError" contains "NotFound")
-        foreach (var kvp in StatusCodeMap.Where(kvp => typeName.Contains(kvp.Key, StringComparison.OrdinalIgnoreCase)))
+        // Performance: Direct loop instead of LINQ to avoid allocations
+        foreach (var kvp in StatusCodeMap)
         {
+            if (!typeName.Contains(kvp.Key, StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
             statusCode = kvp.Value;
             return true;
         }
