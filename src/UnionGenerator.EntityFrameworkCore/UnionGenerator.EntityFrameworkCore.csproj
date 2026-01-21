@@ -11,6 +11,8 @@
     <Version>0.1.0</Version>
     <PackageId>UnionGenerator.EntityFrameworkCore</PackageId>
     <Authors>Selçuk Güral</Authors>
+    <Company>Selçuk Güral</Company>
+    <Copyright>Copyright © 2026 Selçuk Güral</Copyright>
     <Description>Entity Framework Core integration for UnionGenerator. Automatically serializes discriminated unions to JSON columns with value converters for seamless database persistence.</Description>
     <PackageTags>entityframework;efcore;unions;json;database;orm</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -18,6 +20,8 @@
     <RepositoryUrl>https://github.com/selcukgural/UnionGenerator</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>logo.png</PackageIcon>
+    <PackageReleaseNotes>Initial release: EF Core integration with JSON value converters for union persistence.</PackageReleaseNotes>
     <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
@@ -35,6 +39,8 @@
   <ItemGroup>
     <!-- Include README for NuGet package -->
     <None Include="README.md" Pack="true" PackagePath="\" />
+    <!-- Include logo for NuGet package -->
+    <None Include="../../logo.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>
 

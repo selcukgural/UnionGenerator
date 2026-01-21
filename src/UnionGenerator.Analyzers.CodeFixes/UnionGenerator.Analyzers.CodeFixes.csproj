@@ -12,6 +12,8 @@
     <Version>0.1.0</Version>
     <PackageId>UnionGenerator.Analyzers.CodeFixes</PackageId>
     <Authors>Selçuk Güral</Authors>
+    <Company>Selçuk Güral</Company>
+    <Copyright>Copyright © 2026 Selçuk Güral</Copyright>
     <Description>Code fix providers for UnionGenerator analyzers. Provides automatic fixes for union-related diagnostic warnings including pattern matching, status codes, and conversions.</Description>
     <PackageTags>roslyn;analyzer;code-fixes;refactoring;unions</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -19,6 +21,8 @@
     <RepositoryUrl>https://github.com/selcukgural/UnionGenerator</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>logo.png</PackageIcon>
+    <PackageReleaseNotes>Initial release: Automatic code fixes for union analyzer diagnostics.</PackageReleaseNotes>
     <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <DevelopmentDependency>true</DevelopmentDependency>
@@ -46,6 +50,8 @@
   <ItemGroup>
     <!-- Include README for NuGet package -->
     <None Include="README.md" Pack="true" PackagePath="\" />
+    <!-- Include logo for NuGet package -->
+    <None Include="../../logo.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <!-- Package analyzer assembly in the correct NuGet path -->

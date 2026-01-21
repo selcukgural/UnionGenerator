@@ -12,6 +12,8 @@
     <Version>0.1.0</Version>
     <PackageId>UnionGenerator.OneOfSourceGen</PackageId>
     <Authors>Selçuk Güral</Authors>
+    <Company>Selçuk Güral</Company>
+    <Copyright>Copyright © 2026 Selçuk Güral</Copyright>
     <Description>Compile-time source generator for converting OneOf types to UnionGenerator unions. Zero-overhead compile-time conversion without runtime reflection.</Description>
     <PackageTags>source-generator;oneof;unions;roslyn;codegen;compile-time</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -19,6 +21,8 @@
     <RepositoryUrl>https://github.com/selcukgural/UnionGenerator</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>logo.png</PackageIcon>
+    <PackageReleaseNotes>Initial release: Compile-time OneOf to UnionGenerator source generator with zero runtime overhead.</PackageReleaseNotes>
     <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <DevelopmentDependency>true</DevelopmentDependency>
@@ -37,6 +41,8 @@
   <ItemGroup>
     <!-- Include README for NuGet package -->
     <None Include="README.md" Pack="true" PackagePath="\" />
+    <!-- Include logo for NuGet package -->
+    <None Include="../../logo.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <!-- Package analyzer assembly in the correct NuGet path -->

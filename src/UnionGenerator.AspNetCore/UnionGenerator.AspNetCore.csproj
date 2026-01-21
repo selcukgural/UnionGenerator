@@ -11,6 +11,8 @@
     <Version>0.1.0</Version>
     <PackageId>UnionGenerator.AspNetCore</PackageId>
     <Authors>Selçuk Güral</Authors>
+    <Company>Selçuk Güral</Company>
+    <Copyright>Copyright © 2026 Selçuk Güral</Copyright>
     <Description>ASP.NET Core integration for UnionGenerator. Automatically converts Result unions to ProblemDetails (RFC 7807) with proper status codes, validation errors, and ActionResult support.</Description>
     <PackageTags>aspnetcore;unions;problemdetails;rest-api;error-handling;web</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -18,6 +20,8 @@
     <RepositoryUrl>https://github.com/selcukgural/UnionGenerator</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>logo.png</PackageIcon>
+    <PackageReleaseNotes>Initial release: ASP.NET Core integration with automatic ProblemDetails conversion and ActionResult support.</PackageReleaseNotes>
     <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
@@ -37,6 +41,8 @@
   <ItemGroup>
     <!-- Include README for NuGet package -->
     <None Include="README.md" Pack="true" PackagePath="\" />
+    <!-- Include logo for NuGet package -->
+    <None Include="../../logo.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>
 

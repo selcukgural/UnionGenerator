@@ -11,6 +11,8 @@
     <Version>0.1.0</Version>
     <PackageId>UnionGenerator.FluentValidation</PackageId>
     <Authors>Selçuk Güral</Authors>
+    <Company>Selçuk Güral</Company>
+    <Copyright>Copyright © 2026 Selçuk Güral</Copyright>
     <Description>FluentValidation integration for UnionGenerator. Automatically converts validation failures to structured ProblemDetails errors with field-level error mapping.</Description>
     <PackageTags>fluentvalidation;validation;unions;error-handling;aspnetcore</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -18,6 +20,8 @@
     <RepositoryUrl>https://github.com/selcukgural/UnionGenerator</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>logo.png</PackageIcon>
+    <PackageReleaseNotes>Initial release: FluentValidation integration with automatic ProblemDetails error conversion.</PackageReleaseNotes>
     <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
@@ -35,6 +39,8 @@
   <ItemGroup>
     <!-- Include README for NuGet package -->
     <None Include="README.md" Pack="true" PackagePath="\" />
+    <!-- Include logo for NuGet package -->
+    <None Include="../../logo.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>
 

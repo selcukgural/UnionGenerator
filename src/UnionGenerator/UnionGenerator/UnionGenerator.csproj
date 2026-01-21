@@ -12,6 +12,8 @@
     <Version>0.1.0</Version>
     <PackageId>UnionGenerator</PackageId>
     <Authors>Selçuk Güral</Authors>
+    <Company>Selçuk Güral</Company>
+    <Copyright>Copyright © 2026 Selçuk Güral</Copyright>
     <Description>Compile-time discriminated union source generator for C#. Eliminate boilerplate code with zero runtime overhead, full pattern matching support, and type-safe error handling.</Description>
     <PackageTags>source-generator;unions;discriminated-unions;roslyn;codegen;functional;result;either</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -19,6 +21,8 @@
     <RepositoryUrl>https://github.com/selcukgural/UnionGenerator</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>logo.png</PackageIcon>
+    <PackageReleaseNotes>Initial release: Core discriminated union source generator with pattern matching support, type-safe error handling, and zero runtime overhead.</PackageReleaseNotes>
     <IsPackable>true</IsPackable>
     <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>
@@ -38,6 +42,8 @@
   <ItemGroup>
     <!-- Include README for NuGet package -->
     <None Include="../README.md" Pack="true" PackagePath="\" />
+    <!-- Include logo for NuGet package -->
+    <None Include="../../../logo.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>

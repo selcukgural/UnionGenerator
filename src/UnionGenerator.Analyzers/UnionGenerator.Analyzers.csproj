@@ -12,6 +12,8 @@
     <Version>0.1.0</Version>
     <PackageId>UnionGenerator.Analyzers</PackageId>
     <Authors>Selçuk Güral</Authors>
+    <Company>Selçuk Güral</Company>
+    <Copyright>Copyright © 2026 Selçuk Güral</Copyright>
     <Description>Roslyn analyzers for UnionGenerator. Catches union-related bugs at compile time including missing status codes, unsafe conversions, and pattern matching issues.</Description>
     <PackageTags>roslyn;analyzer;unions;diagnostics;code-quality</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -19,6 +21,8 @@
     <RepositoryUrl>https://github.com/selcukgural/UnionGenerator</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>logo.png</PackageIcon>
+    <PackageReleaseNotes>Initial release: Roslyn analyzers for union pattern matching, status codes, and type safety diagnostics.</PackageReleaseNotes>
     <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <DevelopmentDependency>true</DevelopmentDependency>
@@ -43,6 +47,8 @@
   <ItemGroup>
     <!-- Include README for NuGet package -->
     <None Include="README.md" Pack="true" PackagePath="\" />
+    <!-- Include logo for NuGet package -->
+    <None Include="../../logo.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <!-- Package analyzer assembly in the correct NuGet path -->
