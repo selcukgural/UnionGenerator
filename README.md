@@ -73,23 +73,23 @@ string message = result.Match(
 
 | Package | Description | NuGet |
 |---------|-------------|-------|
-| **UnionGenerator** | Core source generator and attributes | [![NuGet](https://img.shields.io/badge/NuGet-0.1.0-blue.svg)](#) |
+| **UnionGenerator** | Core source generator and attributes | [![NuGet](https://img.shields.io/nuget/v/UnionGenerator.svg)](https://www.nuget.org/packages/UnionGenerator) |
 
 ### Integration Packages
 
 | Package | Description | NuGet |
 |---------|-------------|-------|
-| **UnionGenerator.AspNetCore** | ASP.NET Core ProblemDetails integration | [![NuGet](https://img.shields.io/badge/NuGet-0.1.0-blue.svg)](#) |
-| **UnionGenerator.EntityFrameworkCore** | EF Core value converters for unions | [![NuGet](https://img.shields.io/badge/NuGet-0.1.0-blue.svg)](#) |
-| **UnionGenerator.FluentValidation** | FluentValidation error mapping | [![NuGet](https://img.shields.io/badge/NuGet-0.1.0-blue.svg)](#) |
-| **UnionGenerator.OneOfCompat** | OneOf drop-in replacement | [![NuGet](https://img.shields.io/badge/NuGet-0.1.0-blue.svg)](#) |
+| **UnionGenerator.AspNetCore** | ASP.NET Core ProblemDetails integration | [![NuGet](https://img.shields.io/nuget/v/UnionGenerator.AspNetCore.svg)](https://www.nuget.org/packages/UnionGenerator.AspNetCore) |
+| **UnionGenerator.EntityFrameworkCore** | EF Core value converters for unions | [![NuGet](https://img.shields.io/nuget/v/UnionGenerator.EntityFrameworkCore.svg)](https://www.nuget.org/packages/UnionGenerator.EntityFrameworkCore) |
+| **UnionGenerator.FluentValidation** | FluentValidation error mapping | [![NuGet](https://img.shields.io/nuget/v/UnionGenerator.FluentValidation.svg)](https://www.nuget.org/packages/UnionGenerator.FluentValidation) |
+| **UnionGenerator.OneOfCompat** | OneOf drop-in replacement | [![NuGet](https://img.shields.io/nuget/v/UnionGenerator.OneOfCompat.svg)](https://www.nuget.org/packages/UnionGenerator.OneOfCompat) |
 
 ### Analyzer Packages
 
 | Package | Description | NuGet |
 |---------|-------------|-------|
-| **UnionGenerator.Analyzers** | Roslyn analyzers for union usage | [![NuGet](https://img.shields.io/badge/NuGet-0.1.0-blue.svg)](#) |
-| **UnionGenerator.Analyzers.CodeFixes** | Code fix providers | [![NuGet](https://img.shields.io/badge/NuGet-0.1.0-blue.svg)](#) |
+| **UnionGenerator.Analyzers** | Roslyn analyzers for union usage | [![NuGet](https://img.shields.io/nuget/v/UnionGenerator.Analyzers.svg)](https://www.nuget.org/packages/UnionGenerator.Analyzers) |
+| **UnionGenerator.Analyzers.CodeFixes** | Code fix providers | [![NuGet](https://img.shields.io/nuget/v/UnionGenerator.Analyzers.CodeFixes.svg)](https://www.nuget.org/packages/UnionGenerator.Analyzers.CodeFixes) |
 
 ---
 
