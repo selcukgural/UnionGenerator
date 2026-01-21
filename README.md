@@ -341,31 +341,61 @@ dotnet test --collect:"XPlat Code Coverage"
 
 ## 📤 Publishing to NuGet
 
-This project uses GitHub Actions for automated NuGet package publishing.
+This project uses GitHub Actions for **fully automated** NuGet package publishing.
 
-### Quick Publish
+### 🚀 Automatic Publishing (Version-Based)
+
+When you merge code to `main` branch with an updated version number, packages are **automatically published** to NuGet.org:
 
 ```bash
-# Create and push a version tag
-git tag -a v0.2.0 -m "Release version 0.2.0"
-git push origin v0.2.0
+# 1. Update version in .csproj files
+# Edit src/UnionGenerator/UnionGenerator/UnionGenerator.csproj:
+# <Version>0.2.0</Version>  (change from 0.1.0)
+
+# 2. Commit and push to main
+git add .
+git commit -m "Release v0.2.0: Added new features"
+git push origin main
 
 # GitHub Actions will automatically:
+# ✅ Detect version change (0.1.0 → 0.2.0)
 # ✅ Build and test
 # ✅ Pack NuGet packages
 # ✅ Publish to NuGet.org
+# ✅ Create Git tag (v0.2.0)
 # ✅ Create GitHub Release
+```
+
+**How it works:**
+- Workflow compares .csproj version with previous commit
+- If version changed → automatic publish
+- If version unchanged → skip publish
+
+### Alternative: Tag-Based Publishing
+
+You can also publish by creating a version tag:
+
+```bash
+git tag -a v0.2.0 -m "Release version 0.2.0"
+git push origin v0.2.0
 ```
 
 ### Setup Required
 
 1. **NuGet API Key**: Add `NUGET_API_KEY` secret to GitHub repository settings
-2. **Full Instructions**: See [Publishing Guide](.github/PUBLISHING.md)
+   - Go to: Repository Settings → Secrets and variables → Actions
+   - Create new secret: `NUGET_API_KEY`
+   - Value: Your NuGet.org API key
 
-### Publishing Methods
+2. **GitHub Token**: Automatically provided by GitHub Actions (no setup needed)
 
-- **Automatic** (Recommended): Push a version tag (e.g., `v0.1.0`)
-- **Manual**: Use GitHub Actions workflow dispatch UI
+### Publishing Workflows
+
+| Workflow | Trigger | Purpose |
+|----------|---------|---------|
+| **publish-on-version-change.yml** | Push to `main` (version changed) | Automatic CD pipeline |
+| **publish-nuget.yml** | Version tag push (`v*.*.*`) | Manual release via tag |
+| **publish-manual.yml** | Workflow dispatch | Emergency manual publish |
 
 ---
 
