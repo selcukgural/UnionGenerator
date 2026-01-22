@@ -46,7 +46,7 @@ dotnet add package UnionGenerator.AspNetCore
 - `ProblemDetails` generation
 - Middleware integration
 
-[Learn more about ASP.NET Core integration →](../integrations/aspnetcore)
+<!-- [Learn more about ASP.NET Core integration →](../integrations/aspnetcore) (Coming soon) -->
 
 ### Entity Framework Core
 
@@ -62,7 +62,7 @@ dotnet add package UnionGenerator.EntityFrameworkCore
 - Query translation
 - Migration support
 
-[Learn more about EF Core integration →](../integrations/entityframeworkcore)
+<!-- [Learn more about EF Core integration →](../integrations/entityframeworkcore) (Coming soon) -->
 
 ### FluentValidation
 
@@ -77,7 +77,7 @@ dotnet add package UnionGenerator.FluentValidation
 - Error aggregation
 - Property path mapping
 
-[Learn more about FluentValidation integration →](../integrations/fluentvalidation)
+<!-- [Learn more about FluentValidation integration →](../integrations/fluentvalidation) (Coming soon) -->
 
 ### OneOf Compatibility
 
@@ -92,7 +92,7 @@ dotnet add package UnionGenerator.OneOfCompat
 - Migration helpers
 - Drop-in replacement
 
-[Learn more about OneOf migration →](../integrations/oneof-compat)
+<!-- [Learn more about OneOf migration →](../integrations/oneof-compat) (Coming soon) -->
 
 ## Analyzer Packages (Optional)
 

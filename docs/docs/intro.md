@@ -1,4 +1,5 @@
 ---
+id: welcome
 sidebar_position: 1
 slug: /
 ---
@@ -41,7 +42,7 @@ return result.Match(
 dotnet add package UnionGenerator
 ```
 
-[View all packages →](/docs/introduction/installation)
+[View all packages →](./introduction/installation)
 
 ## Quick Example
 

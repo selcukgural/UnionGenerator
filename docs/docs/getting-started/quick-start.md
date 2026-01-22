@@ -322,7 +322,7 @@ Now that you've created your first union:
 1. [Learn core concepts in depth](./basic-concepts)
 2. [Build more complex unions](./your-first-union)
 3. [Explore common patterns](./common-patterns)
-4. [Try framework integrations](../integrations/aspnetcore)
+<!-- 4. [Try framework integrations](../integrations/aspnetcore) (Coming soon) -->
 
 ## Common Questions
 
@@ -333,10 +333,10 @@ A: No! UnionGenerator creates them automatically. You just define the factory me
 A: Yes! Your union class can implement interfaces and the generated cases will too.
 
 **Q: What about async operations?**  
-A: Use `MatchAsync` for async workflows. See [Async Patterns](../advanced/async-patterns) for details.
+A: Use `MatchAsync` for async workflows.<!-- See [Async Patterns](../advanced/async-patterns) for details. (Coming soon) -->
 
 **Q: How do I serialize unions to JSON?**  
-A: Use `System.Text.Json` with the included converter. See [JSON Serialization](../advanced/json-serialization).
+A: Use `System.Text.Json` with the included converter.<!-- See [JSON Serialization](../advanced/json-serialization). (Coming soon) -->
 
 **Q: Can unions have more than 2 cases?**  
 A: Absolutely! You can have as many cases as you need. Just add more static factory methods.
