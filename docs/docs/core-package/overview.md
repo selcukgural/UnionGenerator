@@ -263,7 +263,7 @@ Dive deeper into specific features:
 
 - [Union Generation](./union-generation.md) - Attributes, options, and customization
 - [Pattern Matching](./pattern-matching.md) - All matching techniques
-- [API Reference](./api-reference.md) - Complete API documentation
+- [API Reference](../api-reference/generated-api.md) - Complete API documentation
 - [Best Practices](./best-practices.md) - Tips and patterns for production code
 
 ## Troubleshooting

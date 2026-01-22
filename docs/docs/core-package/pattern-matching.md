@@ -539,7 +539,7 @@ if (shouldReturn) return BadRequest();
 
 ## Next Steps
 
-- [API Reference](./api-reference.md) - Complete generated API
+- [API Reference](../api-reference/generated-api.md) - Complete generated API
 - [Best Practices](./best-practices.md) - Production-ready patterns
 
 ## Key Takeaways

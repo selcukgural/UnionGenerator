@@ -439,7 +439,7 @@ var result = ResultExtensions.Try(() => int.Parse("42"));
 ## Next Steps
 
 - [Pattern Matching](./pattern-matching.md) - Learn all matching techniques
-- [API Reference](./api-reference.md) - Complete generated API
+- [API Reference](../api-reference/generated-api.md) - Complete generated API
 - [Best Practices](./best-practices.md) - Production-ready patterns
 
 ## Tips
