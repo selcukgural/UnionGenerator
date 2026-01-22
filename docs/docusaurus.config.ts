@@ -40,6 +40,7 @@ const config: Config = {
       'classic',
       {
         docs: {
+          routeBasePath: '/', // Serve docs at the site's root
           sidebarPath: './sidebars.ts',
           editUrl:
             'https://github.com/selcukgural/UnionGenerator/tree/main/docs/',
