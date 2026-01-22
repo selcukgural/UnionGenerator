@@ -4,10 +4,13 @@
 [![.NET](https://img.shields.io/badge/.NET-8.0+-purple.svg)](https://dotnet.microsoft.com/download)
 [![C#](https://img.shields.io/badge/C%23-12.0+-orange.svg)](https://docs.microsoft.com/en-us/dotnet/csharp/)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/UnionGenerator.svg)](https://www.nuget.org/packages/UnionGenerator)
+[![Documentation](https://img.shields.io/badge/docs-online-brightgreen.svg)](https://selcukgural.github.io/UnionGenerator/)
 
 **Compile-time discriminated unions for C# with zero runtime overhead.**
 
 Eliminate boilerplate, enable type-safe error handling, and leverage exhaustive pattern matching—all without exceptions or nullable chains.
+
+**[📖 Read the Full Documentation](https://selcukgural.github.io/UnionGenerator/)**
 
 ---
 
@@ -96,7 +99,17 @@ string message = result.Match(
 
 ## 📚 Documentation
 
-### Core Documentation
+**[📖 Complete Documentation](https://selcukgural.github.io/UnionGenerator/)** - Comprehensive guides, API reference, and examples
+
+### Quick Links
+
+- [Getting Started](https://selcukgural.github.io/UnionGenerator/getting-started/quick-start) - 5-minute quick start guide
+- [Core Package Guide](https://selcukgural.github.io/UnionGenerator/core-package/overview) - Union generation and pattern matching
+- [Integration Packages](https://selcukgural.github.io/UnionGenerator/integration-packages) - ASP.NET Core, EF Core, FluentValidation
+- [API Reference](https://selcukgural.github.io/UnionGenerator/api-reference/overview) - Complete API documentation
+- [Contributing Guide](https://selcukgural.github.io/UnionGenerator/contributing/overview) - How to contribute
+
+### Legacy Documentation
 
 - **[Core Library Documentation](src/UnionGenerator/README.md)** - Complete guide to union generation, patterns, and best practices
 - **[Examples Overview](examples/README.md)** - Quick reference for all examples

@@ -595,4 +595,4 @@ var result = GetUser(id)
 
 - [Generated API Reference](./generated-api.md) - Complete API documentation
 - [Attributes Reference](./attributes.md) - Configuration options
-- [Result Pattern Guide](../getting-started/common-patterns.md#result-pattern) - Result type patterns
+- [Result Pattern Guide](../getting-started/common-patterns) - Result type patterns

@@ -9,21 +9,18 @@ const config: Config = {
   tagline: 'Powerful Discriminated Unions for C# with Source Generators',
   favicon: 'img/favicon.ico',
 
-  // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
-  future: {
-    v4: true, // Improve compatibility with the upcoming Docusaurus v4
-  },
-
-  // Set the production url of your site here
+  // SEO and social media
   url: 'https://selcukgural.github.io',
-  // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/UnionGenerator/',
+  
+  // Social media meta
+  organizationName: 'selcukgural',
+  projectName: 'UnionGenerator',
 
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'selcukgural', // Usually your GitHub org/user name.
-  projectName: 'UnionGenerator', // Usually your repo name.
+  // Future flags
+  future: {
+    v4: true,
+  },
 
   onBrokenLinks: 'warn',
 
@@ -54,6 +51,19 @@ const config: Config = {
   ],
 
   themeConfig: {
+    // Social card image
+    image: 'img/uniongenerator-social-card.jpg',
+    
+    // Metadata
+    metadata: [
+      {name: 'keywords', content: 'C#, discriminated unions, source generator, pattern matching, functional programming, type safety'},
+      {name: 'author', content: 'Selçuk Güral'},
+      {name: 'twitter:card', content: 'summary_large_image'},
+      {name: 'twitter:title', content: 'UnionGenerator - Discriminated Unions for C#'},
+      {name: 'twitter:description', content: 'Compile-time discriminated unions for C# with zero runtime overhead. Type-safe pattern matching and exhaustive case handling.'},
+      {property: 'og:type', content: 'website'},
+      {property: 'og:site_name', content: 'UnionGenerator'},
+    ],
     image: 'img/uniongenerator-social-card.jpg',
     colorMode: {
       defaultMode: 'dark',
