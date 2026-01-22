@@ -1,0 +1,8 @@
+{
+  "label": "Contributing",
+  "position": 7,
+  "link": {
+    "type": "generated-index",
+    "description": "Learn how to contribute to UnionGenerator. Setup your development environment, understand the build system, and follow our guidelines."
+  }
+}
