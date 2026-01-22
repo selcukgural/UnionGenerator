@@ -36,6 +36,10 @@ jobs:
         working-directory: ./docs
         run: npm ci
 
+      - name: Clean cache
+        working-directory: ./docs
+        run: rm -rf .docusaurus build
+
       - name: Build documentation
         working-directory: ./docs
         run: npm run build
