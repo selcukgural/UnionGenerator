@@ -1,47 +1,74 @@
 ---
 sidebar_position: 1
+slug: /
 ---
 
-# Tutorial Intro
+# Welcome to UnionGenerator
 
-Let's discover **Docusaurus in less than 5 minutes**.
+**Powerful discriminated unions for C# with zero runtime overhead.**
 
-## Getting Started
+UnionGenerator brings type-safe, compile-time discriminated unions to C# using Roslyn source generators. Build robust applications with exhaustive pattern matching, eliminate boilerplate, and make invalid states impossible.
 
-Get started by **creating a new site**.
+## Why UnionGenerator?
 
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
+```csharp
+// ✅ Type-safe, explicit, and exhaustive
+[GenerateUnion]
+public partial class Result<T, E>
+{
+    public static Result<T, E> Ok(T value) => new OkCase(value);
+    public static Result<T, E> Error(E error) => new ErrorCase(error);
+}
 
-### What you'll need
-
-- [Node.js](https://nodejs.org/en/download/) version 20.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
-
-## Generate a new site
-
-Generate a new Docusaurus site using the **classic template**.
-
-The classic template will automatically be added to your project after you run the command:
-
-```bash
-npm init docusaurus@latest my-website classic
+var result = await FetchDataAsync();
+return result.Match(
+    ok: data => Ok(data),
+    error: err => BadRequest(err.Message)
+);
 ```
 
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
+## Key Features
 
-The command also installs all necessary dependencies you need to run Docusaurus.
+- **🔥 Zero Boilerplate**: Define unions with just an attribute
+- **⚡ Zero Runtime Cost**: Pure compile-time code generation
+- **🛡️ Type-Safe**: Compiler enforces exhaustive pattern matching
+- **🔌 Framework Integration**: ASP.NET Core, EF Core, FluentValidation
+- **📖 Full IDE Support**: IntelliSense, debugging, refactoring
 
-## Start your site
-
-Run the development server:
+## Installation
 
 ```bash
-cd my-website
-npm run start
+dotnet add package UnionGenerator
 ```
 
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
+[View all packages →](/docs/introduction/installation)
 
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
+## Quick Example
 
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+```csharp
+[GenerateUnion]
+public partial class Result<T, E>
+{
+    public static Result<T, E> Ok(T value) => new OkCase(value);
+    public static Result<T, E> Error(E error) => new ErrorCase(error);
+}
+
+public IActionResult GetUser(int id)
+{
+    var result = _service.GetUser(id);
+    return result.Match(
+        ok: user => Ok(user),
+        error: msg => NotFound(msg)
+    );
+}
+```
+
+## Next Steps
+
+1. [What is UnionGenerator?](./introduction/what-is-uniongenerator) - Understand the core concepts
+2. [Why Discriminated Unions?](./introduction/why-discriminated-unions) - Learn the benefits
+3. [Quick Start](./getting-started/quick-start) - Build your first union in 5 minutes
+
+---
+
+Ready to build safer, more expressive C# code? [Get started →](./introduction/what-is-uniongenerator)
