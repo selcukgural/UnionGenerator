@@ -3,6 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![.NET](https://img.shields.io/badge/.NET-8.0+-purple.svg)](https://dotnet.microsoft.com/download)
 [![C#](https://img.shields.io/badge/C%23-12.0+-orange.svg)](https://docs.microsoft.com/en-us/dotnet/csharp/)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/UnionGenerator.svg)](https://www.nuget.org/packages/UnionGenerator)
 
 **Compile-time discriminated unions for C# with zero runtime overhead.**
 
@@ -71,25 +72,25 @@ string message = result.Match(
 
 ### Core Package
 
-| Package | Description | NuGet |
-|---------|-------------|-------|
-| **UnionGenerator** | Core source generator and attributes | [![NuGet](https://img.shields.io/nuget/v/UnionGenerator.svg)](https://www.nuget.org/packages/UnionGenerator) |
+| Package | Description | NuGet | Downloads |
+|---------|-------------|-------|-----------|
+| **UnionGenerator** | Core source generator and attributes | [![NuGet](https://img.shields.io/nuget/v/UnionGenerator.svg)](https://www.nuget.org/packages/UnionGenerator) | [![Downloads](https://img.shields.io/nuget/dt/UnionGenerator.svg)](https://www.nuget.org/packages/UnionGenerator) |
 
 ### Integration Packages
 
-| Package | Description | NuGet |
-|---------|-------------|-------|
-| **UnionGenerator.AspNetCore** | ASP.NET Core ProblemDetails integration | [![NuGet](https://img.shields.io/nuget/v/UnionGenerator.AspNetCore.svg)](https://www.nuget.org/packages/UnionGenerator.AspNetCore) |
-| **UnionGenerator.EntityFrameworkCore** | EF Core value converters for unions | [![NuGet](https://img.shields.io/nuget/v/UnionGenerator.EntityFrameworkCore.svg)](https://www.nuget.org/packages/UnionGenerator.EntityFrameworkCore) |
-| **UnionGenerator.FluentValidation** | FluentValidation error mapping | [![NuGet](https://img.shields.io/nuget/v/UnionGenerator.FluentValidation.svg)](https://www.nuget.org/packages/UnionGenerator.FluentValidation) |
-| **UnionGenerator.OneOfCompat** | OneOf drop-in replacement | [![NuGet](https://img.shields.io/nuget/v/UnionGenerator.OneOfCompat.svg)](https://www.nuget.org/packages/UnionGenerator.OneOfCompat) |
+| Package | Description | NuGet | Downloads |
+|---------|-------------|-------|-----------|
+| **UnionGenerator.AspNetCore** | ASP.NET Core ProblemDetails integration | [![NuGet](https://img.shields.io/nuget/v/UnionGenerator.AspNetCore.svg)](https://www.nuget.org/packages/UnionGenerator.AspNetCore) | [![Downloads](https://img.shields.io/nuget/dt/UnionGenerator.AspNetCore.svg)](https://www.nuget.org/packages/UnionGenerator.AspNetCore) |
+| **UnionGenerator.EntityFrameworkCore** | EF Core value converters for unions | [![NuGet](https://img.shields.io/nuget/v/UnionGenerator.EntityFrameworkCore.svg)](https://www.nuget.org/packages/UnionGenerator.EntityFrameworkCore) | [![Downloads](https://img.shields.io/nuget/dt/UnionGenerator.EntityFrameworkCore.svg)](https://www.nuget.org/packages/UnionGenerator.EntityFrameworkCore) |
+| **UnionGenerator.FluentValidation** | FluentValidation error mapping | [![NuGet](https://img.shields.io/nuget/v/UnionGenerator.FluentValidation.svg)](https://www.nuget.org/packages/UnionGenerator.FluentValidation) | [![Downloads](https://img.shields.io/nuget/dt/UnionGenerator.FluentValidation.svg)](https://www.nuget.org/packages/UnionGenerator.FluentValidation) |
+| **UnionGenerator.OneOfCompat** | OneOf drop-in replacement | [![NuGet](https://img.shields.io/nuget/v/UnionGenerator.OneOfCompat.svg)](https://www.nuget.org/packages/UnionGenerator.OneOfCompat) | [![Downloads](https://img.shields.io/nuget/dt/UnionGenerator.OneOfCompat.svg)](https://www.nuget.org/packages/UnionGenerator.OneOfCompat) |
 
 ### Analyzer Packages
 
-| Package | Description | NuGet |
-|---------|-------------|-------|
-| **UnionGenerator.Analyzers** | Roslyn analyzers for union usage | [![NuGet](https://img.shields.io/nuget/v/UnionGenerator.Analyzers.svg)](https://www.nuget.org/packages/UnionGenerator.Analyzers) |
-| **UnionGenerator.Analyzers.CodeFixes** | Code fix providers | [![NuGet](https://img.shields.io/nuget/v/UnionGenerator.Analyzers.CodeFixes.svg)](https://www.nuget.org/packages/UnionGenerator.Analyzers.CodeFixes) |
+| Package | Description | NuGet | Downloads |
+|---------|-------------|-------|-----------|
+| **UnionGenerator.Analyzers** | Roslyn analyzers for union usage | [![NuGet](https://img.shields.io/nuget/v/UnionGenerator.Analyzers.svg)](https://www.nuget.org/packages/UnionGenerator.Analyzers) | [![Downloads](https://img.shields.io/nuget/dt/UnionGenerator.Analyzers.svg)](https://www.nuget.org/packages/UnionGenerator.Analyzers) |
+| **UnionGenerator.Analyzers.CodeFixes** | Code fix providers | [![NuGet](https://img.shields.io/nuget/v/UnionGenerator.Analyzers.CodeFixes.svg)](https://www.nuget.org/packages/UnionGenerator.Analyzers.CodeFixes) | [![Downloads](https://img.shields.io/nuget/dt/UnionGenerator.Analyzers.CodeFixes.svg)](https://www.nuget.org/packages/UnionGenerator.Analyzers.CodeFixes) |
 
 ---
 
