@@ -1,0 +1,8 @@
+{
+  "label": "OneOf Compatibility",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "Migrate from OneOf library with compatibility layer and migration guide."
+  }
+}

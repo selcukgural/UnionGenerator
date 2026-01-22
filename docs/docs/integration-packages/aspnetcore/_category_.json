@@ -1,0 +1,8 @@
+{
+  "label": "ASP.NET Core",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "Build type-safe Web APIs with automatic ProblemDetails generation and HTTP response mapping."
+  }
+}

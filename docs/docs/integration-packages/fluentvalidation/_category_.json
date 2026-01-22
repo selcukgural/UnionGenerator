@@ -1,0 +1,8 @@
+{
+  "label": "FluentValidation",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "Seamlessly map FluentValidation results to union error types."
+  }
+}

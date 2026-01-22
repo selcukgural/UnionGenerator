@@ -1,0 +1,8 @@
+{
+  "label": "Integration Packages",
+  "position": 5,
+  "link": {
+    "type": "generated-index",
+    "description": "Framework integrations for ASP.NET Core, Entity Framework Core, FluentValidation, and OneOf compatibility."
+  }
+}
