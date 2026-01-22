@@ -1,0 +1,8 @@
+{
+  "label": "Core Package",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "Deep dive into UnionGenerator's core features, attributes, and pattern matching capabilities."
+  }
+}
