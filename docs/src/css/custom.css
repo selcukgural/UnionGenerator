@@ -1,0 +1,115 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* You can override the default Infima variables here. */
+:root {
+  --ifm-color-primary: #8B5CF6;
+  --ifm-color-primary-dark: #7c3aed;
+  --ifm-color-primary-darker: #7c3aed;
+  --ifm-color-primary-darkest: #6d28d9;
+  --ifm-color-primary-light: #a78bfa;
+  --ifm-color-primary-lighter: #c4b5fd;
+  --ifm-color-primary-lightest: #ddd6fe;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(139, 92, 246, 0.1);
+}
+
+/* Dark mode with modern purple/neon aesthetic */
+[data-theme='dark'] {
+  /* Purple primary colors */
+  --ifm-color-primary: #8B5CF6;
+  --ifm-color-primary-dark: #7c3aed;
+  --ifm-color-primary-darker: #6d28d9;
+  --ifm-color-primary-darkest: #5b21b6;
+  --ifm-color-primary-light: #a78bfa;
+  --ifm-color-primary-lighter: #c4b5fd;
+  --ifm-color-primary-lightest: #ddd6fe;
+  
+  /* Neon blue accent */
+  --ifm-color-secondary: #60A5FA;
+  --ifm-color-info: #60A5FA;
+  
+  /* Neon green for success */
+  --ifm-color-success: #34D399;
+  
+  /* Dark backgrounds */
+  --ifm-background-color: #0F172A;
+  --ifm-background-surface-color: #1E293B;
+  --ifm-navbar-background-color: #0F172A;
+  --ifm-footer-background-color: #0F172A;
+  
+  /* Card and panel backgrounds */
+  --ifm-card-background-color: #1E293B;
+  --ifm-hover-overlay: rgba(139, 92, 246, 0.1);
+  
+  /* Code blocks */
+  --docusaurus-highlighted-code-line-bg: rgba(139, 92, 246, 0.2);
+  --ifm-code-background: #1E293B;
+  
+  /* Text colors */
+  --ifm-font-color-base: #F1F5F9;
+  --ifm-heading-color: #FFFFFF;
+  
+  /* Links */
+  --ifm-link-color: #A78BFA;
+  --ifm-link-hover-color: #C4B5FD;
+  
+  /* Borders */
+  --ifm-border-color: #334155;
+  --ifm-hr-background-color: #334155;
+}
+
+/* Navbar enhancements */
+.navbar {
+  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+  backdrop-filter: blur(8px);
+}
+
+/* Add glow effect to primary buttons and links */
+.button--primary,
+.navbar__link--active {
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+  transition: box-shadow 0.3s ease;
+}
+
+.button--primary:hover {
+  box-shadow: 0 0 30px rgba(139, 92, 246, 0.6);
+}
+
+/* Code block styling */
+.prism-code {
+  border-radius: 8px;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+/* Sidebar enhancements */
+.menu__link--active {
+  background: linear-gradient(90deg, rgba(139, 92, 246, 0.2) 0%, transparent 100%);
+  border-left: 3px solid #8B5CF6;
+}
+
+/* Card hover effects */
+.card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3);
+}
+
+/* Responsive font sizes */
+@media (max-width: 768px) {
+  :root {
+    --ifm-font-size-base: 16px;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
